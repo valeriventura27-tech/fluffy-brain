@@ -634,7 +634,108 @@
 
     .mute-btn:active { transform: scale(0.92); }
 
-    /* ============ TROFEO ============ */
+    /* ============ ANIMACIONES DE CUIDADO ============ */
+    .cuidado-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      background: rgba(255, 232, 214, 0.96);
+      backdrop-filter: blur(4px);
+      flex-direction: column;
+      gap: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .cuidado-overlay.show { opacity: 1; pointer-events: auto; }
+
+    .cuidado-escena {
+      width: 280px;
+      height: 280px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cuidado-fluffy svg {
+      width: 200px;
+      height: 200px;
+    }
+
+    .cuidado-accion {
+      font-size: 4rem;
+      position: absolute;
+      animation: cuidado-accion-anim 1.6s ease-in-out infinite;
+    }
+
+    .cuidado-accion.comer  { top: 30%; left: 12%; animation-name: cuidado-comer; }
+    .cuidado-accion.dormir { top: 15%; right: 20%; animation-name: cuidado-dormir; font-size: 3rem; }
+    .cuidado-accion.baño   { top: 10%; left: 50%; transform: translateX(-50%); animation-name: cuidado-bano; }
+    .cuidado-accion.jugar  { top: 40%; right: 10%; animation-name: cuidado-jugar; }
+    .cuidado-accion.estudiar { top: 20%; right: 15%; animation-name: cuidado-estudiar; font-size: 3rem; }
+
+    @keyframes cuidado-comer {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(8px) scale(1.15); }
+    }
+    @keyframes cuidado-dormir {
+      0%, 100% { opacity: 0.5; transform: translateY(0) scale(1); }
+      50% { opacity: 1; transform: translateY(-10px) scale(1.2); }
+    }
+    @keyframes cuidado-bano {
+      0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+      25% { transform: translateX(-50%) translateY(-6px) rotate(-8deg); }
+      75% { transform: translateX(-50%) translateY(-6px) rotate(8deg); }
+    }
+    @keyframes cuidado-jugar {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-24px) rotate(180deg); }
+    }
+    @keyframes cuidado-estudiar {
+      0%, 100% { transform: translateY(0); opacity: 0.6; }
+      50% { transform: translateY(-8px); opacity: 1; }
+    }
+
+    .cuidado-msg {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: var(--coral);
+      text-align: center;
+      max-width: 360px;
+      line-height: 1.3;
+    }
+
+    /* ============ ACARICIAR FLUFFY ============ */
+    .corazon-flotante {
+      position: absolute;
+      font-size: 1.6rem;
+      pointer-events: none;
+      animation: corazon-up 1.4s ease-out forwards;
+      z-index: 50;
+    }
+
+    @keyframes corazon-up {
+      0% { opacity: 1; transform: translate(-50%, 0) scale(0.5); }
+      100% { opacity: 0; transform: translate(-50%, -60px) scale(1.2); }
+    }
+
+    .fluffy-en-casa { pointer-events: auto !important; cursor: pointer; }
+
+    .fluffy-en-casa.caricia { animation: fluffy-caricia 0.4s ease; }
+
+    @keyframes fluffy-caricia {
+      0%, 100% { transform: rotate(0deg); }
+      30% { transform: rotate(-5deg) scale(1.05); }
+      70% { transform: rotate(5deg) scale(1.05); }
+    }
+
+    /* ============ TROFEO NARRATIVO ============ */
     #screen-trophy {
       align-items: center;
       justify-content: center;
@@ -1211,6 +1312,15 @@
 
 <div id="app">
 
+  <!-- OVERLAY DE CUIDADO (animación tras ejercicio exitoso) -->
+  <div class="cuidado-overlay" id="cuidado-overlay">
+    <div class="cuidado-escena">
+      <div class="cuidado-fluffy" id="cuidado-fluffy"></div>
+      <div class="cuidado-accion" id="cuidado-accion">🍖</div>
+    </div>
+    <div class="cuidado-msg" id="cuidado-msg">¡Muy bien!</div>
+  </div>
+
   <!-- BOTÓN MUTE GLOBAL -->
   <button class="mute-btn" id="mute-btn" onclick="toggleMute()">🔊</button>
 
@@ -1219,7 +1329,7 @@
     <div class="box-container" id="box-container"></div>
     <div class="onboard-title" id="onboard-title">¡Te ha llegado un cachorro!</div>
     <div class="onboard-text" id="onboard-text">Es un perrito fluffy muy pequeñito. Ponle un nombre para empezar a jugar juntos.</div>
-    <input type="text" class="name-input" id="name-input" placeholder="Su nombre..." maxlength="12" autocomplete="off">
+    <input type="text" class="name-input" id="name-input" placeholder="Ponle un nombre..." maxlength="12" autocomplete="off">
     <div class="name-suggestions" id="name-chips"></div>
     <button class="btn btn-primary" id="btn-onboard-go">¡Empezar!</button>
   </div>
@@ -2161,28 +2271,138 @@ function finishExercise(type, correct) {
   });
 }
 
-// Muestra un feedback corto de "Fluffy ha sido atendido" y vuelve a casa
+// Muestra animación rica de cuidado cumplido y vuelve a casa
 function showCuidadoFeedback(modo) {
   const info = NECESIDADES_INFO[modo.necesidad];
+  const mname = state.mascotName || "Fluffy";
   const mensajes = {
-    hambre:   `¡${state.mascotName || "Fluffy"} ha comido genial!`,
-    higiene:  `¡${state.mascotName || "Fluffy"} está limpito y contento!`,
-    energia:  `¡${state.mascotName || "Fluffy"} ha descansado muy bien!`,
-    juego:    `¡${state.mascotName || "Fluffy"} se lo ha pasado en grande!`,
-    aprender: `¡${state.mascotName || "Fluffy"} ha aprendido algo nuevo!`
+    hambre:   `¡${mname} ha comido genial!`,
+    higiene:  `¡${mname} está limpito!`,
+    energia:  `¡${mname} descansa feliz!`,
+    juego:    `¡${mname} se ha divertido!`,
+    aprender: `¡${mname} ha aprendido!`
   };
-  const msg = mensajes[modo.necesidad] || "¡Muy bien!";
-  const fb = document.getElementById("feedback");
-  const emoji = document.getElementById("feedback-emoji");
-  const text = document.getElementById("feedback-text");
-  if (emoji) emoji.textContent = info.icono;
-  if (text) text.textContent = msg;
-  if (fb) fb.classList.add("show");
+  const accionEmojis = {
+    hambre: "🍖",
+    higiene: "🫧",
+    energia: "💤",
+    juego: "🎾",
+    aprender: "📚"
+  };
+  const accionClases = {
+    hambre: "comer",
+    higiene: "baño",
+    energia: "dormir",
+    juego: "jugar",
+    aprender: "estudiar"
+  };
+
+  // Rellenar escena
+  const fluffyEl = document.getElementById("cuidado-fluffy");
+  fluffyEl.innerHTML = MASCOTA_SVG[mascotPhase()];
+  const accionEl = document.getElementById("cuidado-accion");
+  accionEl.textContent = accionEmojis[modo.necesidad] || "⭐";
+  accionEl.className = "cuidado-accion " + (accionClases[modo.necesidad] || "");
+  document.getElementById("cuidado-msg").textContent = mensajes[modo.necesidad] || "¡Muy bien!";
+
+  // Mostrar overlay
+  document.getElementById("cuidado-overlay").classList.add("show");
   try { playMelodySuccess(); } catch(e){}
+
+  // Tras unos segundos, ocultar y volver a casa. Comprobar trofeo.
   setTimeout(() => {
-    if (fb) fb.classList.remove("show");
-    goCasa();
-  }, 2000);
+    document.getElementById("cuidado-overlay").classList.remove("show");
+    // Verificar si con este cuidado ha ganado trofeo narrativo
+    const trofeoGanado = checkTrofeoNarrativo();
+    if (trofeoGanado) {
+      showTrophyScreen();
+    } else {
+      goCasa();
+    }
+  }, 2200);
+}
+
+/* ==========================================================================
+   ACARICIAR A FLUFFY (interacción libre sin ejercicio)
+   ========================================================================== */
+
+let cariciaCount = 0;
+let cariciaTimer = null;
+
+function acariciarFluffy(evt) {
+  const fluffyEl = document.getElementById("fluffy-casa");
+  if (!fluffyEl) return;
+
+  // Animación de Fluffy "balanceándose" por la caricia
+  fluffyEl.classList.remove("caricia");
+  void fluffyEl.offsetWidth; // forzar reflow
+  fluffyEl.classList.add("caricia");
+
+  // Corazón volando desde donde se tocó
+  const rect = fluffyEl.getBoundingClientRect();
+  const corazon = document.createElement("div");
+  corazon.className = "corazon-flotante";
+  corazon.textContent = ["💕","💖","💛","✨","🌟"][Math.floor(Math.random()*5)];
+  corazon.style.left = (rect.left + rect.width / 2) + "px";
+  corazon.style.top = (rect.top + rect.height / 3) + "px";
+  document.body.appendChild(corazon);
+  setTimeout(() => corazon.remove(), 1500);
+
+  // Cada 5 caricias sube un poquito una necesidad al azar (refuerzo suave sin premiar spam)
+  cariciaCount++;
+  clearTimeout(cariciaTimer);
+  cariciaTimer = setTimeout(() => { cariciaCount = 0; }, 30000); // reset si no toca en 30s
+
+  if (cariciaCount >= 5) {
+    cariciaCount = 0;
+    // Sube 5 puntos a la necesidad más baja
+    const urgente = necesidadMasUrgente();
+    const key = urgente ? urgente.key : "juego";
+    saciarNecesidad(key, 5);
+    renderNecesidadesBars();
+  }
+}
+
+/* ==========================================================================
+   TROFEO NARRATIVO (has cuidado bien de Fluffy hoy)
+   ========================================================================== */
+
+// Se dispara cuando ha completado 4 cuidados distintos en un día.
+// Requiere variedad: no vale hacer 4 veces cocina. Así ataca distintos ejercicios.
+let cuidadosHoyKeys = new Set();
+
+function checkTrofeoNarrativo() {
+  const hoy = hoyStr();
+  if (state.fechaCuidadosHoy !== hoy) {
+    // Nuevo día: reset
+    state.fechaCuidadosHoy = hoy;
+    state.cuidadosHoy = 0;
+    cuidadosHoyKeys = new Set();
+  }
+  // Se llama desde finishExercise cuando hay acierto en modo casa
+  // state.cuidadosHoy se incrementó en contarCuidadoDiario()
+  // Comprobamos si acaba de cruzar el umbral de 4 cuidados
+  if ((state.cuidadosHoy || 0) === 4) {
+    // Solo disparamos UNA VEZ por día (cuando exactamente llega a 4)
+    // Reutilizamos el mismo sistema de trofeos con tope diario
+    const checkKey = "trofeoNarrativoHoy_" + hoy;
+    if (state[checkKey]) return false;
+    state[checkKey] = true;
+    // Chequea tope de trofeos diarios y gana uno
+    const hoyT = hoyStr();
+    if (state.fechaTrofeoHoy !== hoyT) {
+      state.fechaTrofeoHoy = hoyT;
+      state.trofeosHoy = 0;
+    }
+    if ((state.trofeosHoy || 0) < 2) {
+      state.trofeosGanados = (state.trofeosGanados || 0) + 1;
+      state.trofeosHoy = (state.trofeosHoy || 0) + 1;
+      saveState();
+      return true;
+    }
+    saveState();
+  }
+  return false;
 }
 
 /* ---------- DICTADO ---------- */
@@ -2564,11 +2784,13 @@ function endSession() {
     btnEnd.textContent = END_BUTTON_TEXTS[state.toggleBtnEnd % END_BUTTON_TEXTS.length];
     state.toggleBtnEnd = (state.toggleBtnEnd || 0) + 1;
   }
-  // Comprobar trofeo ANTES de mostrar pantalla de fin
-  const trofeoGanado = checkTrophyEarned();
+  // En sesiones DIRIGIDAS (desde accesos directos, no desde casa), conserva la lógica de trofeos por sesión
+  // En cuidados desde la casa, los trofeos los gestiona checkTrofeoNarrativo
+  const esSesionDirigida = !modoCasaEjercicio && sessionExercises.length > 1;
+  const trofeoGanado = esSesionDirigida ? checkTrophyEarned() : false;
   if (trofeoGanado) {
     showTrophyScreen();
-    playMusic(); // también suena música en trofeo
+    playMusic();
   } else {
     goScreen("end");
     playMelodySuccess();
@@ -2668,6 +2890,12 @@ function posicionarFluffy() {
   const fluffyEl = document.getElementById("fluffy-casa");
   if (!fluffyEl) return;
   fluffyEl.innerHTML = MASCOTA_SVG[mascotPhase()];
+
+  // Conectar handler de caricia (solo una vez)
+  if (!fluffyEl.dataset.cariciaReady) {
+    fluffyEl.addEventListener("click", acariciarFluffy);
+    fluffyEl.dataset.cariciaReady = "1";
+  }
 
   // Limpiar indicadores anteriores
   document.querySelectorAll(".habitacion.urgente").forEach(h => h.classList.remove("urgente"));
@@ -3429,7 +3657,6 @@ function initOnboarding() {
   const input = document.getElementById("name-input");
   const btn = document.getElementById("btn-onboard-go");
 
-  // Limpiar chips
   chips.innerHTML = "";
   NOMBRES_SUGERIDOS.forEach(nombre => {
     const chip = document.createElement("button");
@@ -3437,33 +3664,44 @@ function initOnboarding() {
     chip.textContent = nombre;
     chip.onclick = () => {
       input.value = nombre;
-      input.focus();
+      // NO hacemos focus — así no sale el teclado, evita el problema de blur
     };
     chips.appendChild(chip);
   });
 
-  // Habilitar/deshabilitar botón según input
-  function updateBtn() {
-    const val = input.value.trim();
-    btn.disabled = val.length < 1;
-    btn.style.opacity = val.length < 1 ? "0.4" : "1";
-  }
-  input.addEventListener("input", updateBtn);
-  updateBtn();
+  // El botón SIEMPRE está habilitado. Si no hay nombre, usa "Fluffy" por defecto.
+  // Así el usuario nunca tiene que "despertar" el botón con dos toques.
+  btn.disabled = false;
+  btn.style.opacity = "1";
 
-  btn.onclick = () => {
-    const val = input.value.trim() || "Fluffy";
+  // Handler unificado: se dispara tanto con touchend como con click
+  let alreadyFired = false;
+  const handleStart = () => {
+    if (alreadyFired) return;
+    alreadyFired = true;
+    const val = (input.value || "").trim() || "Fluffy";
     state.mascotName = val;
-    // Inicializar barras en 100 al empezar
-    state.necesidades = { hambre: 100, higiene: 100, energia: 100, juego: 100, aprender: 100 };
+    // Hambre BAJA desde el inicio para que Valeria vea la necesidad y aprenda la mecánica.
+    // El resto OK. La primera acción natural será dar de comer.
+    state.necesidades = { hambre: 25, higiene: 100, energia: 100, juego: 100, aprender: 100 };
     state.lastNecesidadesUpdate = Date.now();
     saveState();
     try { getAudioCtx(); playMelodyWelcome(); } catch(e) {}
+    // Voz narrativa: presenta a la mascota y la guía
     setTimeout(() => {
-      speak(`¡Hola! Tu perrito se llama ${val}. ¡A jugar!`);
-    }, 800);
+      speak(`¡Hola! Tu perrito se llama ${val}. Tiene un poquito de hambre. Tócale la cocina para darle de comer.`);
+    }, 900);
     goCasa();
   };
+
+  // Capturamos touchend directamente en el botón (bypass del bloqueo global)
+  btn.addEventListener("touchend", (e) => {
+    e.preventDefault(); // evita el click fantasma posterior
+    handleStart();
+  }, { passive: false });
+
+  // Fallback para navegadores sin touch (desktop)
+  btn.addEventListener("click", handleStart);
 }
 
 /* ==========================================================================
