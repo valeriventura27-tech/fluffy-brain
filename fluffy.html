@@ -1,0 +1,2589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Fluffy">
+  <title>Fluffy — El juego de Valeria</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ============ RESET & BASE ============ */
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; overflow: hidden; user-select: none; -webkit-user-select: none; }
+
+    :root {
+      --cream: #FFF4E6;
+      --peach: #FFD9B8;
+      --coral: #FF9B85;
+      --lavender: #B8A6D9;
+      --mint: #88D4A0;
+      --sun: #FFD98E;
+      --ink: #4A3F55;
+      --soft-ink: #7A6F85;
+      --bg-grad: linear-gradient(160deg, #FFF4E6 0%, #FFE4D1 50%, #FFD9D9 100%);
+      --display: 'Baloo 2', system-ui;
+      --body: 'Atkinson Hyperlegible', system-ui;
+      --shadow-soft: 0 8px 32px rgba(74, 63, 85, 0.12);
+      --shadow-button: 0 4px 0 rgba(74, 63, 85, 0.15);
+    }
+
+    body {
+      font-family: var(--body);
+      background: var(--bg-grad);
+      color: var(--ink);
+      font-size: 20px;
+      line-height: 1.5;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 24px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      pointer-events: none;
+    }
+
+    .screen.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* ============ TYPOGRAPHY ============ */
+    h1, h2, h3 { font-family: var(--display); font-weight: 800; line-height: 1.1; }
+    h1 { font-size: 3rem; color: var(--coral); }
+    h2 { font-size: 2rem; color: var(--ink); }
+    h3 { font-size: 1.5rem; color: var(--ink); }
+
+    /* ============ BUTTONS ============ */
+    .btn {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.5rem;
+      padding: 20px 40px;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: var(--shadow-button);
+      min-height: 64px;
+    }
+
+    .btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(74, 63, 85, 0.15);
+    }
+
+    .btn-primary {
+      background: var(--coral);
+      color: white;
+      font-size: 2rem;
+      padding: 24px 56px;
+      border-radius: 32px;
+    }
+
+    .btn-secondary { background: white; color: var(--ink); }
+    .btn-syllable {
+      background: white;
+      color: var(--ink);
+      font-size: 2.2rem;
+      padding: 16px 24px;
+      min-width: 80px;
+      border-radius: 20px;
+      margin: 8px;
+      border: 3px solid var(--peach);
+    }
+    .btn-syllable.used {
+      opacity: 0.3;
+      transform: scale(0.9);
+    }
+    .btn-option {
+      background: white;
+      color: var(--ink);
+      font-size: 1.3rem;
+      padding: 20px 24px;
+      text-align: left;
+      width: 100%;
+      margin: 8px 0;
+      line-height: 1.4;
+      min-height: auto;
+    }
+    .btn-option.correct { background: var(--mint); color: white; }
+    .btn-option.incorrect { background: #FFB8B8; color: var(--ink); }
+
+    /* ============ HOME SCREEN ============ */
+    #screen-home {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 24px;
+    }
+
+    .mascot-container {
+      width: 280px;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .mascot-container::before {
+      content: '';
+      position: absolute;
+      bottom: 10%;
+      width: 60%;
+      height: 20px;
+      background: radial-gradient(ellipse, rgba(74, 63, 85, 0.15), transparent 70%);
+      border-radius: 50%;
+    }
+
+    .mascot-container svg {
+      width: 100%;
+      height: 100%;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .greeting {
+      font-family: var(--display);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .greeting strong { color: var(--coral); }
+
+    .mascot-name {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: var(--soft-ink);
+      letter-spacing: 0.02em;
+    }
+
+    .xp-bar {
+      width: 260px;
+      height: 16px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .xp-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--coral), var(--sun));
+      border-radius: 8px;
+      transition: width 0.6s ease;
+    }
+
+    /* ============ SESSION SCREEN ============ */
+    #screen-session {
+      padding: 16px 20px;
+    }
+
+    .session-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .session-progress {
+      display: flex;
+      gap: 8px;
+    }
+
+    .progress-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(74, 63, 85, 0.15);
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .progress-dot.done {
+      background: var(--mint);
+      transform: scale(1.1);
+    }
+
+    .progress-dot.active { background: var(--coral); }
+
+    .mini-mascot { width: 56px; height: 56px; }
+
+    .exercise-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 12px 0;
+      min-height: 0;
+    }
+
+    /* ============ DICTADO ============ */
+    .dictado-emoji {
+      font-size: 8rem;
+      line-height: 1;
+      margin-bottom: 16px;
+      animation: pop 0.5s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0); }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .sound-btn {
+      background: white;
+      border: none;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      font-size: 2.5rem;
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: transform 0.15s ease;
+    }
+
+    .sound-btn:active { transform: scale(0.92); }
+
+    .sound-btn.playing {
+      animation: pulse 0.6s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .syllables-built {
+      min-height: 80px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 20px;
+      padding: 16px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      width: 90%;
+      max-width: 500px;
+      border: 3px dashed rgba(74, 63, 85, 0.2);
+    }
+
+    .syllables-built span {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 2.2rem;
+      color: var(--ink);
+      animation: drop 0.3s ease;
+    }
+
+    @keyframes drop {
+      0% { transform: translateY(-20px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .syllables-pool {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 600px;
+      gap: 4px;
+    }
+
+    /* ============ DECISIÓN LÉXICA ============ */
+    .decision-word {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 5rem;
+      color: var(--ink);
+      background: white;
+      padding: 40px 60px;
+      border-radius: 32px;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 48px;
+      letter-spacing: 0.02em;
+    }
+
+    .decision-buttons {
+      display: flex;
+      gap: 24px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .decision-buttons .btn {
+      flex: 1;
+      font-size: 2rem;
+      padding: 32px 16px;
+    }
+
+    .btn-yes { background: var(--mint); color: white; }
+    .btn-no { background: var(--lavender); color: white; }
+
+    .decision-hint {
+      font-size: 1.2rem;
+      color: var(--soft-ink);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    /* ============ COMPRENSIÓN ============ */
+    .comprension-container {
+      width: 100%;
+      max-width: 700px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .comprension-text {
+      background: white;
+      padding: 32px 36px;
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
+      font-size: 1.75rem;
+      line-height: 1.9;
+      letter-spacing: 0.03em;
+      overflow-y: auto;
+      flex: 1;
+      margin-bottom: 16px;
+    }
+
+    .comprension-text h3 {
+      color: var(--coral);
+      margin-bottom: 16px;
+      font-size: 2.1rem;
+    }
+
+    .comprension-question {
+      background: white;
+      padding: 28px;
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .comprension-question h3 {
+      margin-bottom: 16px;
+      font-size: 1.5rem;
+    }
+
+    .btn-option { font-size: 1.5rem; padding: 22px 26px; }
+
+    /* ============ OMISIÓN DE SÍLABA ============ */
+    .omision-question {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--ink);
+      margin-bottom: 16px;
+      text-align: center;
+      max-width: 560px;
+      line-height: 1.6;
+      background: white;
+      padding: 24px 32px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .omision-question strong {
+      color: var(--coral);
+      font-size: 1.8rem;
+      display: inline-block;
+      padding: 0 6px;
+    }
+
+    .omision-silabas {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      min-height: 90px;
+      align-items: center;
+    }
+
+    .omision-silabas .btn-syllable {
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .omision-silabas .btn-syllable.removed {
+      opacity: 0;
+      transform: translateY(-40px) scale(0.5);
+      pointer-events: none;
+    }
+
+    /* ============ DISCRIMINACIÓN ============ */
+    .discrim-grid {
+      display: grid;
+      gap: 10px;
+      background: white;
+      padding: 28px;
+      border-radius: 28px;
+      box-shadow: var(--shadow-soft);
+      max-width: 90vw;
+    }
+
+    .discrim-cell {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 3rem;
+      color: var(--ink);
+      background: var(--cream);
+      border: none;
+      border-radius: 16px;
+      padding: 12px;
+      min-width: 54px;
+      min-height: 54px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.15s;
+    }
+
+    .discrim-cell:active { transform: scale(0.92); }
+    .discrim-cell.found { background: var(--mint); color: white; animation: pop 0.4s ease; }
+
+    /* ============ ONBOARDING ============ */
+    #screen-onboard {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 28px;
+    }
+
+    .box-container {
+      width: 240px;
+      height: 240px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .box-container svg { width: 100%; height: 100%; animation: float 3s ease-in-out infinite; }
+
+    .onboard-title {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 2.2rem;
+      color: var(--coral);
+      line-height: 1.2;
+    }
+
+    .onboard-text {
+      font-size: 1.3rem;
+      color: var(--soft-ink);
+      max-width: 380px;
+      line-height: 1.5;
+    }
+
+    .name-input {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.8rem;
+      text-align: center;
+      padding: 18px 24px;
+      border: 3px solid var(--peach);
+      border-radius: 20px;
+      background: white;
+      color: var(--ink);
+      width: 280px;
+      outline: none;
+    }
+
+    .name-input:focus { border-color: var(--coral); }
+
+    .name-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .name-chip {
+      background: white;
+      border: 2px solid var(--peach);
+      color: var(--ink);
+      padding: 10px 20px;
+      border-radius: 16px;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .name-chip:active { background: var(--coral); color: white; }
+
+    /* ============ FLUFFY CONTEXT (dictado) ============ */
+    .fluffy-intro {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--soft-ink);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .feedback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .feedback.show { opacity: 1; pointer-events: auto; }
+
+    .feedback-content {
+      text-align: center;
+    }
+
+    .feedback-emoji {
+      font-size: 8rem;
+      margin-bottom: 16px;
+      animation: pop 0.5s ease;
+    }
+
+    .feedback h2 {
+      color: var(--coral);
+      font-size: 2.5rem;
+    }
+
+    /* ============ END SCREEN ============ */
+    #screen-end {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 24px;
+    }
+
+    .sparkles {
+      position: absolute;
+      pointer-events: none;
+      font-size: 2rem;
+      animation: sparkle 1.5s ease infinite;
+    }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 0; transform: scale(0); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    /* ============ HINT / HELP ============ */
+    .hint {
+      font-size: 1.1rem;
+      color: var(--soft-ink);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    /* ============ HUB (selección módulo) ============ */
+    #screen-hub {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 20px;
+    }
+
+    .hub-mascot { width: 180px; height: 180px; }
+
+    .hub-title {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: var(--ink);
+    }
+
+    .hub-title strong { color: var(--coral); }
+
+    .hub-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: 100%;
+      max-width: 420px;
+      margin-top: 8px;
+    }
+
+    .hub-btn {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: white;
+      color: var(--ink);
+      padding: 22px 28px;
+      border-radius: 28px;
+      box-shadow: var(--shadow-button);
+      border: none;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.5rem;
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .hub-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(74, 63, 85, 0.15);
+    }
+
+    .hub-btn-icon {
+      font-size: 3rem;
+      flex-shrink: 0;
+      width: 70px;
+      height: 70px;
+      background: var(--cream);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hub-btn-letras .hub-btn-icon { background: #FFE4D1; }
+    .hub-btn-numeros .hub-btn-icon { background: #E4F0FF; }
+
+    .hub-btn-label small {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--soft-ink);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    /* ============ MÓDULO NÚMEROS ============ */
+    .num-question {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.7rem;
+      color: var(--ink);
+      text-align: center;
+      background: white;
+      padding: 22px 28px;
+      border-radius: 22px;
+      box-shadow: var(--shadow-soft);
+      max-width: 92vw;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .num-question strong { color: var(--coral); font-size: 2.2rem; }
+
+    .num-grupos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      max-width: 92vw;
+      margin-bottom: 16px;
+      padding: 8px;
+    }
+
+    .num-grupo {
+      background: white;
+      border: 3px dashed var(--peach);
+      border-radius: 18px;
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      justify-content: center;
+      align-items: center;
+      min-width: 72px;
+      min-height: 72px;
+    }
+
+    .num-item {
+      font-size: 1.8rem;
+      animation: pop 0.4s ease;
+    }
+
+    .num-opciones {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      max-width: 92vw;
+    }
+
+    .num-opcion {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 2.2rem;
+      background: white;
+      color: var(--ink);
+      border: none;
+      border-radius: 20px;
+      padding: 18px 26px;
+      box-shadow: var(--shadow-button);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      min-width: 84px;
+    }
+
+    .num-opcion:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(74, 63, 85, 0.15);
+    }
+
+    .num-opcion.correct { background: var(--mint); color: white; }
+    .num-opcion.incorrect { background: #FFB8B8; color: var(--ink); }
+
+    .num-decenas-unidades {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .num-columna {
+      background: white;
+      padding: 18px 20px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-soft);
+      text-align: center;
+    }
+
+    .num-columna-titulo {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--soft-ink);
+      margin-bottom: 10px;
+    }
+
+    .num-fichas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      justify-content: center;
+      max-width: 140px;
+      min-height: 60px;
+      align-items: center;
+    }
+
+    .num-ficha {
+      width: 22px;
+      height: 22px;
+      background: var(--coral);
+      border-radius: 6px;
+      animation: pop 0.3s ease;
+    }
+
+    .num-ficha.decena {
+      width: 14px;
+      height: 50px;
+      background: var(--lavender);
+    }
+
+    .num-comparacion {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .num-caja {
+      background: white;
+      padding: 14px;
+      border-radius: 18px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      justify-content: center;
+      align-items: center;
+      min-width: 100px;
+      min-height: 100px;
+      max-width: 150px;
+    }
+
+    .num-caja .num-item { font-size: 1.4rem; }
+
+    .num-comp-ops {
+      display: flex;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .num-comp-op {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 2.4rem;
+      background: white;
+      color: var(--ink);
+      border: 3px solid var(--peach);
+      border-radius: 18px;
+      width: 72px;
+      height: 72px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .num-comp-op:active { transform: scale(0.92); }
+    .num-comp-op.correct { background: var(--mint); color: white; border-color: var(--mint); }
+    .num-comp-op.incorrect { background: #FFB8B8; }
+
+    /* ============ TAP FEEDBACK ============ */
+    .tap-ok { animation: tapOk 0.3s ease; }
+    .tap-err { animation: tapErr 0.4s ease; }
+
+    @keyframes tapOk {
+      50% { transform: scale(1.1); background: var(--mint); color: white; }
+    }
+
+    @keyframes tapErr {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); background: #FFB8B8; }
+      75% { transform: translateX(8px); }
+    }
+
+    /* ============ RESPONSIVE (iPad portrait/landscape) ============ */
+    @media (max-height: 800px) {
+      .dictado-emoji { font-size: 6rem; }
+      .decision-word { font-size: 4rem; padding: 32px 48px; }
+      .mascot-container { width: 220px; height: 220px; }
+    }
+
+    @media (orientation: landscape) {
+      #screen-home { flex-direction: row; justify-content: space-around; }
+      .mascot-container { width: 300px; height: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ONBOARDING SCREEN (primera vez) -->
+  <div id="screen-onboard" class="screen">
+    <div class="box-container" id="box-container"></div>
+    <div class="onboard-title" id="onboard-title">¡Te ha llegado un cachorro!</div>
+    <div class="onboard-text" id="onboard-text">Es un perrito fluffy muy pequeñito. Ponle un nombre para empezar a jugar juntos.</div>
+    <input type="text" class="name-input" id="name-input" placeholder="Su nombre..." maxlength="12" autocomplete="off">
+    <div class="name-suggestions" id="name-chips"></div>
+    <button class="btn btn-primary" id="btn-onboard-go">¡Empezar!</button>
+  </div>
+
+  <!-- HUB SCREEN (selección de módulo) -->
+  <div id="screen-hub" class="screen">
+    <div class="hub-mascot" id="mascot-hub"></div>
+    <div class="hub-title">¡Hola, <strong id="hub-name">Valeria</strong>!<br>¿A qué quieres jugar?</div>
+    <div class="xp-bar hub-xp"><div class="xp-bar-fill" id="xp-fill-hub" style="width: 0%"></div></div>
+    <div class="hub-buttons">
+      <button class="hub-btn hub-btn-letras" onclick="enterModule('letras')">
+        <div class="hub-btn-icon">📖</div>
+        <div class="hub-btn-label">Jugar con letras<small>Leer y escribir con Fluffy</small></div>
+      </button>
+      <button class="hub-btn hub-btn-numeros" onclick="enterModule('numeros')">
+        <div class="hub-btn-icon">🔢</div>
+        <div class="hub-btn-label">Jugar con números<small>Contar con Fluffy</small></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div id="screen-home" class="screen active">
+    <div class="mascot-container" id="mascot-home"></div>
+    <div class="mascot-name" id="mascot-name">Tu amiguito</div>
+    <div class="greeting">¡Hola, <strong id="greeting-name">Valeria</strong>!</div>
+    <div class="xp-bar"><div class="xp-bar-fill" id="xp-fill" style="width: 0%"></div></div>
+    <button class="btn btn-primary" onclick="startSession()">¡Jugar!</button>
+  </div>
+
+  <!-- SESSION SCREEN -->
+  <div id="screen-session" class="screen">
+    <div class="session-header">
+      <div class="session-progress" id="progress-dots"></div>
+      <div class="mini-mascot" id="mascot-mini"></div>
+    </div>
+    <div class="exercise-container" id="exercise-container"></div>
+    <div class="feedback" id="feedback">
+      <div class="feedback-content">
+        <div class="feedback-emoji" id="feedback-emoji">⭐</div>
+        <h2 id="feedback-text">¡Muy bien!</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- END SCREEN -->
+  <div id="screen-end" class="screen">
+    <div class="mascot-container" id="mascot-end"></div>
+    <h1 id="end-title">¡Qué bien!</h1>
+    <div id="end-message" style="font-size:1.3rem;color:var(--soft-ink);max-width:400px;line-height:1.6;"></div>
+    <div class="xp-bar"><div class="xp-bar-fill" id="xp-fill-end" style="width: 0%"></div></div>
+    <div id="xp-gained" style="font-family:var(--display);font-weight:700;color:var(--coral);font-size:1.5rem;"></div>
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;max-width:380px;">
+      <button class="btn btn-primary" id="btn-end-again" onclick="playAgain()">Jugar otra vez</button>
+      <button class="btn btn-secondary" onclick="goHome()" style="font-size:1.1rem;padding:14px 32px;min-height:auto;">Ir al menú</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ==========================================================================
+   CORPUS (embebido)
+   ========================================================================== */
+
+const PALABRAS = [
+  {p:"mesa",s:["me","sa"],n:1,e:"🪑"},{p:"gato",s:["ga","to"],n:1,e:"🐱"},{p:"taza",s:["ta","za"],n:1,e:"☕"},{p:"vaso",s:["va","so"],n:1,e:"🥛"},{p:"foca",s:["fo","ca"],n:1,e:"🦭"},{p:"casa",s:["ca","sa"],n:1,e:"🏠"},{p:"roca",s:["ro","ca"],n:1,e:"🪨"},{p:"tela",s:["te","la"],n:1,e:"🧵"},{p:"cola",s:["co","la"],n:1,e:"🐈"},{p:"lazo",s:["la","zo"],n:1,e:"🎀"},{p:"sala",s:["sa","la"],n:1,e:"🛋️"},{p:"cara",s:["ca","ra"],n:1,e:"😊"},{p:"luna",s:["lu","na"],n:1,e:"🌙"},{p:"mano",s:["ma","no"],n:1,e:"✋"},{p:"mono",s:["mo","no"],n:1,e:"🐵"},{p:"nata",s:["na","ta"],n:1,e:"🍦"},{p:"seta",s:["se","ta"],n:1,e:"🍄"},{p:"saco",s:["sa","co"],n:1,e:"🎒"},{p:"rama",s:["ra","ma"],n:1,e:"🌿"},{p:"vela",s:["ve","la"],n:1,e:"🕯️"},{p:"lana",s:["la","na"],n:1,e:"🧶"},{p:"rana",s:["ra","na"],n:1,e:"🐸"},{p:"mula",s:["mu","la"],n:1,e:"🫏"},{p:"risa",s:["ri","sa"],n:1,e:"😂"},{p:"rosa",s:["ro","sa"],n:1,e:"🌹"},{p:"loro",s:["lo","ro"],n:1,e:"🦜"},{p:"moto",s:["mo","to"],n:1,e:"🏍️"},{p:"rojo",s:["ro","jo"],n:1,e:"🔴"},{p:"nariz",s:["na","riz"],n:1,e:"👃"},{p:"canica",s:["ca","ni","ca"],n:1,e:"🔵"},{p:"cocina",s:["co","ci","na"],n:1,e:"👩‍🍳"},{p:"jirafa",s:["ji","ra","fa"],n:1,e:"🦒"},{p:"melena",s:["me","le","na"],n:1,e:"🦁"},
+  {p:"boca",s:["bo","ca"],n:2,e:"👄"},{p:"dedo",s:["de","do"],n:2,e:"☝️"},{p:"mapa",s:["ma","pa"],n:2,e:"🗺️"},{p:"pato",s:["pa","to"],n:2,e:"🦆"},{p:"pena",s:["pe","na"],n:2,e:"😢"},{p:"pino",s:["pi","no"],n:2,e:"🌲"},{p:"pelo",s:["pe","lo"],n:2,e:"💇"},{p:"dado",s:["da","do"],n:2,e:"🎲"},{p:"dama",s:["da","ma"],n:2,e:"👸"},{p:"bote",s:["bo","te"],n:2,e:"⛵"},{p:"buzo",s:["bu","zo"],n:2,e:"🤿"},{p:"peso",s:["pe","so"],n:2,e:"⚖️"},{p:"puma",s:["pu","ma"],n:2,e:"🐆"},{p:"paso",s:["pa","so"],n:2,e:"👣"},{p:"pesa",s:["pe","sa"],n:2,e:"🏋️"},{p:"beso",s:["be","so"],n:2,e:"💋"},{p:"bata",s:["ba","ta"],n:2,e:"🥼"},{p:"boda",s:["bo","da"],n:2,e:"💒"},{p:"bici",s:["bi","ci"],n:2,e:"🚲"},{p:"piano",s:["pia","no"],n:2,e:"🎹"},{p:"bebé",s:["be","bé"],n:2,e:"👶"},{p:"papá",s:["pa","pá"],n:2,e:"👨"},{p:"pasa",s:["pa","sa"],n:2,e:"🍇"},{p:"bola",s:["bo","la"],n:2,e:"⚽"},{p:"duna",s:["du","na"],n:2,e:"🏜️"},{p:"pera",s:["pe","ra"],n:2,e:"🍐"},{p:"pila",s:["pi","la"],n:2,e:"🔋"},{p:"pomo",s:["po","mo"],n:2,e:"🚪"},{p:"dona",s:["do","na"],n:2,e:"🍩"},{p:"banana",s:["ba","na","na"],n:2,e:"🍌"},{p:"patata",s:["pa","ta","ta"],n:2,e:"🥔"},{p:"bebida",s:["be","bi","da"],n:2,e:"🥤"},{p:"pepino",s:["pe","pi","no"],n:2,e:"🥒"},
+  {p:"árbol",s:["ár","bol"],n:3,e:"🌳"},{p:"pastel",s:["pas","tel"],n:3,e:"🎂"},{p:"cinta",s:["cin","ta"],n:3,e:"🎗️"},{p:"cartón",s:["car","tón"],n:3,e:"📦"},{p:"sol",s:["sol"],n:3,e:"☀️"},{p:"sal",s:["sal"],n:3,e:"🧂"},{p:"mar",s:["mar"],n:3,e:"🌊"},{p:"pan",s:["pan"],n:3,e:"🍞"},{p:"gol",s:["gol"],n:3,e:"⚽"},{p:"luz",s:["luz"],n:3,e:"💡"},{p:"reloj",s:["re","loj"],n:3,e:"🕐"},{p:"lápiz",s:["lá","piz"],n:3,e:"✏️"},{p:"cartel",s:["car","tel"],n:3,e:"🪧"},{p:"balón",s:["ba","lón"],n:3,e:"⚽"},{p:"jardín",s:["jar","dín"],n:3,e:"🌷"},{p:"ratón",s:["ra","tón"],n:3,e:"🐭"},{p:"botón",s:["bo","tón"],n:3,e:"🔘"},{p:"melón",s:["me","lón"],n:3,e:"🍈"},{p:"limón",s:["li","món"],n:3,e:"🍋"},{p:"volcán",s:["vol","cán"],n:3,e:"🌋"},{p:"antena",s:["an","te","na"],n:3,e:"📡"},{p:"túnel",s:["tú","nel"],n:3,e:"🚇"},{p:"canal",s:["ca","nal"],n:3,e:"📺"},{p:"pincel",s:["pin","cel"],n:3,e:"🖌️"},{p:"barco",s:["bar","co"],n:3,e:"⛴️"},{p:"caldo",s:["cal","do"],n:3,e:"🍲"},{p:"mundo",s:["mun","do"],n:3,e:"🌍"},{p:"cesta",s:["ces","ta"],n:3,e:"🧺"},{p:"campo",s:["cam","po"],n:3,e:"🌾"},{p:"disco",s:["dis","co"],n:3,e:"💿"},{p:"ángel",s:["án","gel"],n:3,e:"👼"},{p:"dulce",s:["dul","ce"],n:3,e:"🍬"},{p:"silla",s:["si","lla"],n:3,e:"🪑"},{p:"papel",s:["pa","pel"],n:3,e:"📄"},
+  {p:"lluvia",s:["llu","via"],n:4,e:"🌧️"},{p:"llave",s:["lla","ve"],n:4,e:"🔑"},{p:"gallina",s:["ga","lli","na"],n:4,e:"🐔"},{p:"anillo",s:["a","ni","llo"],n:4,e:"💍"},{p:"perro",s:["pe","rro"],n:4,e:"🐶"},{p:"carro",s:["ca","rro"],n:4,e:"🛒"},{p:"burro",s:["bu","rro"],n:4,e:"🫏"},{p:"zorro",s:["zo","rro"],n:4,e:"🦊"},{p:"torre",s:["to","rre"],n:4,e:"🗼"},{p:"jarra",s:["ja","rra"],n:4,e:"🫖"},{p:"coche",s:["co","che"],n:4,e:"🚗"},{p:"noche",s:["no","che"],n:4,e:"🌃"},{p:"leche",s:["le","che"],n:4,e:"🥛"},{p:"ducha",s:["du","cha"],n:4,e:"🚿"},{p:"chaleco",s:["cha","le","co"],n:4,e:"🦺"},{p:"mochila",s:["mo","chi","la"],n:4,e:"🎒"},{p:"bicho",s:["bi","cho"],n:4,e:"🐛"},{p:"muchacho",s:["mu","cha","cho"],n:4,e:"👦"},{p:"queso",s:["que","so"],n:4,e:"🧀"},{p:"quince",s:["quin","ce"],n:4,e:"📅"},{p:"parque",s:["par","que"],n:4,e:"🛝"},{p:"máquina",s:["má","qui","na"],n:4,e:"⚙️"},{p:"mosquito",s:["mos","qui","to"],n:4,e:"🦟"},{p:"pequeño",s:["pe","que","ño"],n:4,e:"🤏"},{p:"juguete",s:["ju","gue","te"],n:4,e:"🧸"},{p:"manguera",s:["man","gue","ra"],n:4,e:"🚿"},{p:"paraguas",s:["pa","ra","guas"],n:4,e:"☂️"},{p:"hoguera",s:["ho","gue","ra"],n:4,e:"🔥"},{p:"llama",s:["lla","ma"],n:4,e:"🔥"},{p:"caballo",s:["ca","ba","llo"],n:4,e:"🐴"},{p:"chino",s:["chi","no"],n:4,e:"🥢"},{p:"chocolate",s:["cho","co","la","te"],n:4,e:"🍫"},{p:"amarillo",s:["a","ma","ri","llo"],n:4,e:"🟡"},
+  {p:"plato",s:["pla","to"],n:5,e:"🍽️"},{p:"brazo",s:["bra","zo"],n:5,e:"💪"},{p:"tren",s:["tren"],n:5,e:"🚂"},{p:"cristal",s:["cris","tal"],n:5,e:"🔮"},{p:"fresa",s:["fre","sa"],n:5,e:"🍓"},{p:"flan",s:["flan"],n:5,e:"🍮"},{p:"globo",s:["glo","bo"],n:5,e:"🎈"},{p:"libro",s:["li","bro"],n:5,e:"📖"},{p:"gris",s:["gris"],n:5,e:"⬜"},{p:"clavo",s:["cla","vo"],n:5,e:"🔩"},{p:"trapo",s:["tra","po"],n:5,e:"🧹"},{p:"prado",s:["pra","do"],n:5,e:"🌱"},{p:"bruja",s:["bru","ja"],n:5,e:"🧙‍♀️"},{p:"blanco",s:["blan","co"],n:5,e:"⚪"},{p:"grifo",s:["gri","fo"],n:5,e:"🚰"},{p:"pluma",s:["plu","ma"],n:5,e:"🪶"},{p:"plata",s:["pla","ta"],n:5,e:"🥈"},{p:"cabra",s:["ca","bra"],n:5,e:"🐐"},{p:"fruta",s:["fru","ta"],n:5,e:"🍎"},{p:"negro",s:["ne","gro"],n:5,e:"⬛"},{p:"plaza",s:["pla","za"],n:5,e:"⛲"},{p:"cruz",s:["cruz"],n:5,e:"✝️"},{p:"triste",s:["tris","te"],n:5,e:"😢"},{p:"trigo",s:["tri","go"],n:5,e:"🌾"},{p:"trece",s:["tre","ce"],n:5,e:"🔢"},{p:"presa",s:["pre","sa"],n:5,e:"🌊"},{p:"clase",s:["cla","se"],n:5,e:"🏫"},{p:"broma",s:["bro","ma"],n:5,e:"🤡"},{p:"frase",s:["fra","se"],n:5,e:"💬"},{p:"drama",s:["dra","ma"],n:5,e:"🎭"},{p:"flor",s:["flor"],n:5,e:"🌸"},{p:"grano",s:["gra","no"],n:5,e:"☕"},{p:"clave",s:["cla","ve"],n:5,e:"🔐"},{p:"frío",s:["frí","o"],n:5,e:"❄️"},
+  {p:"mariposa",s:["ma","ri","po","sa"],n:6,e:"🦋"},{p:"bicicleta",s:["bi","ci","cle","ta"],n:6,e:"🚲"},{p:"elefante",s:["e","le","fan","te"],n:6,e:"🐘"},{p:"mandarina",s:["man","da","ri","na"],n:6,e:"🍊"},{p:"murciélago",s:["mur","cié","la","go"],n:6,e:"🦇"},{p:"cocodrilo",s:["co","co","dri","lo"],n:6,e:"🐊"},{p:"enfermera",s:["en","fer","me","ra"],n:6,e:"👩‍⚕️"},{p:"dinosaurio",s:["di","no","sau","rio"],n:6,e:"🦖"},{p:"pantalones",s:["pan","ta","lo","nes"],n:6,e:"👖"},{p:"zanahoria",s:["za","na","ho","ria"],n:6,e:"🥕"},{p:"semáforo",s:["se","má","fo","ro"],n:6,e:"🚦"},{p:"tractor",s:["trac","tor"],n:6,e:"🚜"},{p:"helicóptero",s:["he","li","cóp","te","ro"],n:6,e:"🚁"},{p:"rinoceronte",s:["ri","no","ce","ron","te"],n:6,e:"🦏"},{p:"hipopótamo",s:["hi","po","pó","ta","mo"],n:6,e:"🦛"},{p:"cangrejo",s:["can","gre","jo"],n:6,e:"🦀"},{p:"calabaza",s:["ca","la","ba","za"],n:6,e:"🎃"},{p:"telaraña",s:["te","la","ra","ña"],n:6,e:"🕸️"},{p:"ascensor",s:["as","cen","sor"],n:6,e:"🛗"},{p:"ferrocarril",s:["fe","rro","ca","rril"],n:6,e:"🚆"},{p:"astronauta",s:["as","tro","nau","ta"],n:6,e:"👨‍🚀"},{p:"veterinario",s:["ve","te","ri","na","rio"],n:6,e:"👨‍⚕️"},{p:"escalera",s:["es","ca","le","ra"],n:6,e:"🪜"},{p:"explorador",s:["ex","plo","ra","dor"],n:6,e:"🧭"},{p:"transporte",s:["trans","por","te"],n:6,e:"🚌"},{p:"escuela",s:["es","cue","la"],n:6,e:"🏫"},{p:"caramelo",s:["ca","ra","me","lo"],n:6,e:"🍭"},{p:"escritorio",s:["es","cri","to","rio"],n:6,e:"🗄️"},{p:"peluquería",s:["pe","lu","que","rí","a"],n:6,e:"💇‍♀️"},{p:"estrella",s:["es","tre","lla"],n:6,e:"⭐"},{p:"ambulancia",s:["am","bu","lan","cia"],n:6,e:"🚑"},{p:"pingüino",s:["pin","güi","no"],n:6,e:"🐧"},{p:"tortuga",s:["tor","tu","ga"],n:6,e:"🐢"}
+];
+
+const PSEUDOPALABRAS = [
+  {p:"gufa",n:1},{p:"lemo",n:1},{p:"ruzo",n:1},{p:"fesi",n:1},{p:"nuvo",n:1},{p:"cila",n:1},{p:"tefo",n:1},{p:"rasu",n:1},{p:"suga",n:1},{p:"lica",n:1},{p:"zanu",n:1},{p:"tosi",n:1},
+  {p:"duza",n:2},{p:"pima",n:2},{p:"bolu",n:2},{p:"deti",n:2},{p:"pofo",n:2},{p:"bifa",n:2},{p:"dopo",n:2},{p:"peza",n:2},{p:"badu",n:2},{p:"pumi",n:2},{p:"dibo",n:2},{p:"paji",n:2},{p:"bumo",n:2},{p:"dafe",n:2},
+  {p:"larto",n:3},{p:"munco",n:3},{p:"jorpe",n:3},{p:"bendal",n:3},{p:"zinte",n:3},{p:"polcar",n:3},{p:"safil",n:3},{p:"mursa",n:3},{p:"rencal",n:3},{p:"piltar",n:3},{p:"dosnar",n:3},{p:"farnel",n:3},{p:"lespo",n:3},{p:"bontir",n:3},{p:"galmur",n:3},{p:"centor",n:3},{p:"jufan",n:3},{p:"tonsa",n:3},
+  {p:"challa",n:4},{p:"jorro",n:4},{p:"turro",n:4},{p:"mecho",n:4},{p:"lacha",n:4},{p:"queti",n:4},{p:"paquer",n:4},{p:"guesi",n:4},{p:"llova",n:4},{p:"merro",n:4},{p:"chepi",n:4},{p:"pelle",n:4},{p:"turche",n:4},{p:"mulla",n:4},{p:"quisa",n:4},{p:"guemi",n:4},{p:"chuva",n:4},{p:"fello",n:4},
+  {p:"pluto",n:5},{p:"drata",n:5},{p:"brofa",n:5},{p:"flimo",n:5},{p:"trepo",n:5},{p:"cliva",n:5},{p:"grusa",n:5},{p:"prabi",n:5},{p:"blumo",n:5},{p:"frelo",n:5},{p:"trope",n:5},{p:"glufa",n:5},{p:"brute",n:5},{p:"drami",n:5},{p:"flepi",n:5},{p:"plosa",n:5},{p:"crume",n:5},{p:"grebi",n:5},{p:"trince",n:5},
+  {p:"mericopa",n:6},{p:"plifeteno",n:6},{p:"bradocina",n:6},{p:"trochelado",n:6},{p:"grufanilla",n:6},{p:"flanepito",n:6},{p:"crilopante",n:6},{p:"dranuberi",n:6},{p:"brosinaldo",n:6},{p:"clementaza",n:6},{p:"pretomasca",n:6},{p:"trinolasto",n:6},{p:"glabepiro",n:6},{p:"fropelendo",n:6},{p:"crunalisto",n:6},{p:"drumifalco",n:6},{p:"brabanicho",n:6},{p:"plocaresta",n:6},{p:"fritanopio",n:6}
+];
+
+const TEXTOS = [
+  {id:"t01",n:1,titulo:"{m} llega a casa",texto:"Hoy llega {m} a casa por primera vez. Es un cachorro pequeño y fluffy. Viene en una caja con un lazo rojo grande. {m} tiene un poco de pena y mira con sus ojos tan grandes. Le doy un besito en la cara. {m} ya es feliz con nosotros.",pregunta:"¿Cómo viene {m} a casa?",opciones:["En una caja con un lazo rojo","Corriendo por la calle","En un coche grande"],correcta:0},
+  {id:"t02",n:1,titulo:"La primera noche de {m}",texto:"{m} no quiere dormir solo. Tiene un poco de miedo. Mamá le pone una cama pequeña cerca de la sala. {m} se enrosca y cierra los ojos despacio. Poco a poco se duerme. Yo le miro y sonrío. {m} ya está en casa.",pregunta:"¿Dónde duerme {m}?",opciones:["En una cama cerca de la sala","En el sofá grande","En el jardín solo"],correcta:0},
+  {id:"t03",n:2,titulo:"{m} conoce el jardín",texto:"Hoy {m} sale al jardín por primera vez. Todo es muy nuevo para él. Ve un pato amarillo en el agua y se asusta un poco. También ve un pino muy alto. {m} corre, salta y juega mucho. Al final vuelve a casa con ganas de una bebida fresca.",pregunta:"¿Qué ve {m} en el agua?",opciones:["Un pato amarillo","Un pez pequeño","Una rana verde"],correcta:0},
+  {id:"t04",n:2,titulo:"La comida favorita de {m}",texto:"A {m} le encanta la comida. Come patata, banana y también pan. Pero su comida favorita es el pepino fresco. Cuando ve un pepino, {m} salta y mueve la cola. Papá le da un trocito pequeño y {m} lo come muy feliz. Luego pide más con la pata.",pregunta:"¿Cuál es la comida favorita de {m}?",opciones:["La banana","El pepino fresco","La patata"],correcta:1},
+  {id:"t05",n:3,titulo:"{m} va al parque",texto:"Hoy vamos al parque con {m}. Lleva un balón rojo y está muy contento. Hay mucho sol en el cielo. {m} corre por el jardín y salta por todo el campo. Ve un árbol grande y se pone debajo a descansar. Toma agua fresca y vuelve a jugar con su balón favorito.",pregunta:"¿Qué se lleva {m} al parque?",opciones:["Un balón rojo","Una pelota azul","Un juguete roto"],correcta:0},
+  {id:"t06",n:3,titulo:"{m} hace un amigo",texto:"En el parque, {m} ve a otro perro pequeño. Tiene el pelo gris y los ojos muy dulces. Los dos se huelen despacio y mueven la cola. ¡Son amigos! Juegan juntos y corren por todo el campo. Al final del día {m} está cansado pero muy contento. Ha hecho un amigo nuevo.",pregunta:"¿Cómo es el perro nuevo?",opciones:["Muy grande y marrón","Pequeño y con pelo gris","Alto y con pelo negro"],correcta:1},
+  {id:"t07",n:3,titulo:"{m} y el balón perdido",texto:"{m} tiene un balón que le encanta mucho. Un día, el balón sale rodando muy lejos. {m} lo busca en la cocina pero no está allí. Lo busca debajo del sofá pero tampoco. Al final, {m} encuentra el balón debajo de una silla. ¡Qué alegría! {m} mueve la cola y ladra mucho.",pregunta:"¿Dónde encuentra {m} el balón?",opciones:["En la cocina","Debajo del sofá","Debajo de una silla"],correcta:2},
+  {id:"t08",n:4,titulo:"{m} no quiere la ducha",texto:"Hoy es día de baño para {m}. Ve la ducha y se esconde debajo de la mesa muy callado. Mamá le llama, pero {m} no quiere salir. A {m} le gusta la leche, le gusta la noche, pero la ducha no le gusta nada. Al final, mamá le enseña un trocito de chocolate. {m} sale corriendo y se deja bañar con paciencia.",pregunta:"¿Por qué sale {m} de su escondite?",opciones:["Por un trocito de chocolate","Porque ve un coche","Porque tiene hambre"],correcta:0},
+  {id:"t09",n:4,titulo:"{m} y la noche oscura",texto:"Era una noche muy oscura en casa. {m} estaba solo en la cocina y escuchó un ruido raro. Tenía un poquito de miedo pero fue a mirar. Se acercó despacio y vio... ¡un pequeño bicho verde en el suelo! {m} no quiso hacerle daño. Lo miró un rato con curiosidad y se fue a dormir. El bicho también se fue a su casa.",pregunta:"¿Qué encuentra {m} en la cocina?",opciones:["Un ratón gris","Un pequeño bicho verde","Un gato negro"],correcta:1},
+  {id:"t10",n:4,titulo:"{m} bajo la lluvia",texto:"{m} sale a pasear por la calle. De repente, empieza a llover muy fuerte. Gotas grandes caen del cielo sobre todos. {m} se mete rápido debajo de un coche para no mojarse. Espera y espera mucho rato. Al final, mamá llega con un paraguas y lo lleva a casa. En casa, lo seca con una toalla suave.",pregunta:"¿Dónde se esconde {m} de la lluvia?",opciones:["Debajo de un árbol","Debajo de un coche","Debajo de una mesa"],correcta:1},
+  {id:"t11",n:5,titulo:"{m} y la bruja buena",texto:"Una tarde, {m} entró en un bosque muy frondoso lleno de plantas. Allí vivía una bruja con el pelo gris y una capa negra muy grande. Pero no era una bruja mala, era muy buena con los animales. Cuando vio a {m}, le ofreció una fresa roja y una flor preciosa. {m} comió la fresa y sintió mucha paz en el bosque. La bruja se despidió de él con una sonrisa. {m} volvió a casa contento.",pregunta:"¿Qué le regala la bruja a {m}?",opciones:["Una fresa y una flor","Un libro y un plato","Un globo y un trapo"],correcta:0},
+  {id:"t12",n:5,titulo:"{m} encuentra una fresa",texto:"{m} estaba en el prado buscando algo rico para comer. De pronto vio una fresa enorme entre las plantas de trigo. Se acercó despacio y la olió con cuidado. ¡Olía muy bien! Pero cuando iba a comérsela, una cabra blanca con cuernos apareció. La cabra también quería la fresa. {m} fue muy amable y partió la fresa en dos trozos iguales. Los dos se sentaron juntos a comer entre el trigo.",pregunta:"¿Qué hace {m} con la fresa?",opciones:["Se la come entero él solo","La parte en dos con la cabra","La guarda para otro día"],correcta:1},
+  {id:"t13",n:5,titulo:"{m} en el prado",texto:"Hoy {m} fue al prado con toda la familia en una mañana preciosa. En el prado había muchas flores y mariposas blancas volando. {m} corría entre el trigo mientras el sol brillaba en el cielo claro. Vio un globo rojo que subía muy alto, cada vez más lejos. También vio una presa con agua cristalina y un grifo de agua fresca. Al final del día, {m} estaba cansado pero muy feliz. Se durmió en la hierba soñando con aventuras.",pregunta:"¿Qué ve {m} subir por el cielo?",opciones:["Un pájaro pequeño","Un globo rojo","Una mariposa blanca"],correcta:1},
+  {id:"t14",n:6,titulo:"{m} es papá",texto:"Ha pasado mucho tiempo desde que {m} llegó en aquella caja. Ahora {m} ya es mayor y tiene un cachorrito propio. El bebé se parece mucho a {m} cuando era pequeño: fluffy, peludo y con ojos muy grandes. {m} le enseña todo lo que sabe sobre la vida: cómo buscar la pelota, cómo dormir tranquilito por la noche y cómo saludar con cariño a las personas. El cachorrito sigue a {m} a todas partes moviendo la cola sin parar. Al final del día, los dos se acurrucan juntos en la cama. {m} es muy feliz de ser papá.",pregunta:"¿Qué le enseña {m} a su cachorrito?",opciones:["Cómo buscar la pelota","Cómo leer libros gruesos","Cómo ir al colegio"],correcta:0},
+  {id:"t15",n:6,titulo:"El cumpleaños de {m}",texto:"Hoy es un día muy especial en casa: ¡es el cumpleaños de {m}! La familia le ha preparado una fiesta con muchos globos de colores y un pastel enorme con fresas encima. {m} lleva un sombrero de fiesta en la cabeza y una corona amarilla brillante. Todos sus amigos perrunos han venido a celebrarlo: el zorro juguetón, el caballo grande y hasta la gallina pequeña del jardín. Juegan toda la tarde en el prado y comen mucho chocolate. Cuando llega el momento, {m} sopla las velas del pastel y pide un deseo en silencio. Solo {m} sabe lo que ha pedido.",pregunta:"¿Qué lleva {m} en su cumpleaños?",opciones:["Un sombrero de fiesta y una corona","Un pantalón y un chaleco","Una mochila y un paraguas"],correcta:0}
+];
+
+/* ==========================================================================
+   MASCOTA BULLDOG FRANCÉS FLUFFY - 4 fases de crecimiento
+   ========================================================================== */
+
+const MASCOTA_SVG = {
+  // Fase 0: Bebé (cachorrito)
+  0: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- cuerpo fluffy -->
+    <ellipse cx="100" cy="135" rx="48" ry="42" fill="#F5E6D3"/>
+    <!-- textura fluffy cuerpo -->
+    <circle cx="75" cy="130" r="10" fill="#FFF0DE"/>
+    <circle cx="125" cy="130" r="10" fill="#FFF0DE"/>
+    <circle cx="100" cy="155" r="10" fill="#FFF0DE"/>
+    <!-- cabeza -->
+    <ellipse cx="100" cy="85" rx="45" ry="40" fill="#F5E6D3"/>
+    <!-- mejillas fluffy -->
+    <circle cx="70" cy="95" r="14" fill="#FFF0DE"/>
+    <circle cx="130" cy="95" r="14" fill="#FFF0DE"/>
+    <!-- orejas caídas bulldog -->
+    <ellipse cx="72" cy="62" rx="14" ry="20" fill="#E8D4BB" transform="rotate(-20 72 62)"/>
+    <ellipse cx="128" cy="62" rx="14" ry="20" fill="#E8D4BB" transform="rotate(20 128 62)"/>
+    <!-- ojos grandes -->
+    <circle cx="85" cy="85" r="7" fill="#2D2438"/>
+    <circle cx="115" cy="85" r="7" fill="#2D2438"/>
+    <circle cx="87" cy="82" r="2.5" fill="white"/>
+    <circle cx="117" cy="82" r="2.5" fill="white"/>
+    <!-- hocico -->
+    <ellipse cx="100" cy="100" rx="15" ry="10" fill="#FFE4CC"/>
+    <!-- nariz -->
+    <ellipse cx="100" cy="97" rx="5" ry="4" fill="#2D2438"/>
+    <!-- boca sonriente -->
+    <path d="M 92 108 Q 100 113 108 108" stroke="#2D2438" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- arrugas bulldog -->
+    <path d="M 88 75 Q 92 77 96 75" stroke="#D4BFA3" stroke-width="1.5" fill="none"/>
+    <path d="M 104 75 Q 108 77 112 75" stroke="#D4BFA3" stroke-width="1.5" fill="none"/>
+  </svg>`,
+
+  // Fase 1: Juvenil
+  1: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- cuerpo más grande -->
+    <ellipse cx="100" cy="135" rx="55" ry="45" fill="#F5E6D3"/>
+    <circle cx="72" cy="130" r="12" fill="#FFF0DE"/>
+    <circle cx="128" cy="130" r="12" fill="#FFF0DE"/>
+    <circle cx="85" cy="160" r="11" fill="#FFF0DE"/>
+    <circle cx="115" cy="160" r="11" fill="#FFF0DE"/>
+    <!-- patas visibles -->
+    <ellipse cx="82" cy="175" rx="10" ry="8" fill="#E8D4BB"/>
+    <ellipse cx="118" cy="175" rx="10" ry="8" fill="#E8D4BB"/>
+    <!-- cabeza -->
+    <ellipse cx="100" cy="80" rx="48" ry="42" fill="#F5E6D3"/>
+    <circle cx="68" cy="92" r="15" fill="#FFF0DE"/>
+    <circle cx="132" cy="92" r="15" fill="#FFF0DE"/>
+    <!-- orejas -->
+    <ellipse cx="70" cy="55" rx="16" ry="22" fill="#E8D4BB" transform="rotate(-25 70 55)"/>
+    <ellipse cx="130" cy="55" rx="16" ry="22" fill="#E8D4BB" transform="rotate(25 130 55)"/>
+    <!-- ojos -->
+    <circle cx="84" cy="80" r="8" fill="#2D2438"/>
+    <circle cx="116" cy="80" r="8" fill="#2D2438"/>
+    <circle cx="86" cy="77" r="3" fill="white"/>
+    <circle cx="118" cy="77" r="3" fill="white"/>
+    <!-- hocico -->
+    <ellipse cx="100" cy="98" rx="17" ry="12" fill="#FFE4CC"/>
+    <ellipse cx="100" cy="94" rx="6" ry="5" fill="#2D2438"/>
+    <!-- lengua pequeña -->
+    <path d="M 92 107 Q 100 115 108 107" stroke="#2D2438" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="100" cy="112" rx="4" ry="3" fill="#FF9B85"/>
+    <!-- arrugas -->
+    <path d="M 85 72 Q 92 75 98 72" stroke="#D4BFA3" stroke-width="1.5" fill="none"/>
+    <path d="M 102 72 Q 108 75 115 72" stroke="#D4BFA3" stroke-width="1.5" fill="none"/>
+  </svg>`,
+
+  // Fase 2: Adulto
+  2: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- cuerpo completo -->
+    <ellipse cx="100" cy="135" rx="62" ry="48" fill="#F5E6D3"/>
+    <circle cx="68" cy="125" r="13" fill="#FFF0DE"/>
+    <circle cx="132" cy="125" r="13" fill="#FFF0DE"/>
+    <circle cx="75" cy="155" r="12" fill="#FFF0DE"/>
+    <circle cx="125" cy="155" r="12" fill="#FFF0DE"/>
+    <circle cx="100" cy="170" r="10" fill="#FFF0DE"/>
+    <!-- patas -->
+    <ellipse cx="78" cy="178" rx="12" ry="9" fill="#E8D4BB"/>
+    <ellipse cx="122" cy="178" rx="12" ry="9" fill="#E8D4BB"/>
+    <!-- collar -->
+    <path d="M 70 115 Q 100 120 130 115" stroke="#FF9B85" stroke-width="5" fill="none"/>
+    <circle cx="100" cy="118" r="4" fill="#FFD98E"/>
+    <!-- cabeza -->
+    <ellipse cx="100" cy="78" rx="52" ry="44" fill="#F5E6D3"/>
+    <circle cx="65" cy="90" r="16" fill="#FFF0DE"/>
+    <circle cx="135" cy="90" r="16" fill="#FFF0DE"/>
+    <!-- orejas -->
+    <ellipse cx="68" cy="52" rx="17" ry="24" fill="#E8D4BB" transform="rotate(-25 68 52)"/>
+    <ellipse cx="132" cy="52" rx="17" ry="24" fill="#E8D4BB" transform="rotate(25 132 52)"/>
+    <!-- ojos -->
+    <circle cx="83" cy="78" r="9" fill="#2D2438"/>
+    <circle cx="117" cy="78" r="9" fill="#2D2438"/>
+    <circle cx="85" cy="75" r="3.5" fill="white"/>
+    <circle cx="119" cy="75" r="3.5" fill="white"/>
+    <!-- cejas alzadas amistosas -->
+    <path d="M 76 65 Q 83 62 90 66" stroke="#D4BFA3" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 110 66 Q 117 62 124 65" stroke="#D4BFA3" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- hocico -->
+    <ellipse cx="100" cy="98" rx="19" ry="13" fill="#FFE4CC"/>
+    <ellipse cx="100" cy="93" rx="7" ry="5.5" fill="#2D2438"/>
+    <!-- sonrisa con lengua -->
+    <path d="M 88 107 Q 100 118 112 107" stroke="#2D2438" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="100" cy="114" rx="6" ry="4" fill="#FF9B85"/>
+    <!-- arrugas -->
+    <path d="M 82 70 Q 90 73 98 70" stroke="#D4BFA3" stroke-width="1.5" fill="none"/>
+    <path d="M 102 70 Q 110 73 118 70" stroke="#D4BFA3" stroke-width="1.5" fill="none"/>
+  </svg>`,
+
+  // Fase 3: Adulto con corona
+  3: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="100" cy="135" rx="62" ry="48" fill="#F5E6D3"/>
+    <circle cx="68" cy="125" r="13" fill="#FFF0DE"/>
+    <circle cx="132" cy="125" r="13" fill="#FFF0DE"/>
+    <circle cx="75" cy="155" r="12" fill="#FFF0DE"/>
+    <circle cx="125" cy="155" r="12" fill="#FFF0DE"/>
+    <circle cx="100" cy="170" r="10" fill="#FFF0DE"/>
+    <ellipse cx="78" cy="178" rx="12" ry="9" fill="#E8D4BB"/>
+    <ellipse cx="122" cy="178" rx="12" ry="9" fill="#E8D4BB"/>
+    <path d="M 70 115 Q 100 120 130 115" stroke="#FF9B85" stroke-width="5" fill="none"/>
+    <circle cx="100" cy="118" r="4" fill="#FFD98E"/>
+    <ellipse cx="100" cy="78" rx="52" ry="44" fill="#F5E6D3"/>
+    <circle cx="65" cy="90" r="16" fill="#FFF0DE"/>
+    <circle cx="135" cy="90" r="16" fill="#FFF0DE"/>
+    <ellipse cx="68" cy="52" rx="17" ry="24" fill="#E8D4BB" transform="rotate(-25 68 52)"/>
+    <ellipse cx="132" cy="52" rx="17" ry="24" fill="#E8D4BB" transform="rotate(25 132 52)"/>
+    <path d="M 75 40 L 82 22 L 90 35 L 100 18 L 110 35 L 118 22 L 125 40 Z" fill="#FFD98E" stroke="#E8B85C" stroke-width="2"/>
+    <circle cx="82" cy="27" r="2.5" fill="#FF9B85"/>
+    <circle cx="100" cy="24" r="3" fill="#FF9B85"/>
+    <circle cx="118" cy="27" r="2.5" fill="#FF9B85"/>
+    <path d="M 75 40 L 125 40" stroke="#E8B85C" stroke-width="3"/>
+    <circle cx="83" cy="78" r="9" fill="#2D2438"/>
+    <circle cx="117" cy="78" r="9" fill="#2D2438"/>
+    <circle cx="85" cy="75" r="3.5" fill="white"/>
+    <circle cx="119" cy="75" r="3.5" fill="white"/>
+    <path d="M 76 65 Q 83 62 90 66" stroke="#D4BFA3" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 110 66 Q 117 62 124 65" stroke="#D4BFA3" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="100" cy="98" rx="19" ry="13" fill="#FFE4CC"/>
+    <ellipse cx="100" cy="93" rx="7" ry="5.5" fill="#2D2438"/>
+    <path d="M 88 107 Q 100 118 112 107" stroke="#2D2438" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="100" cy="114" rx="6" ry="4" fill="#FF9B85"/>
+    <path d="M 82 70 Q 90 73 98 70" stroke="#D4BFA3" stroke-width="1.5" fill="none"/>
+    <path d="M 102 70 Q 110 73 118 70" stroke="#D4BFA3" stroke-width="1.5" fill="none"/>
+  </svg>`,
+
+  // Fase 4: Papá/mamá con cachorrito
+  4: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Fluffy grande (un poco desplazado a la izquierda) -->
+    <ellipse cx="80" cy="140" rx="58" ry="44" fill="#F5E6D3"/>
+    <circle cx="52" cy="130" r="12" fill="#FFF0DE"/>
+    <circle cx="108" cy="130" r="12" fill="#FFF0DE"/>
+    <circle cx="60" cy="160" r="11" fill="#FFF0DE"/>
+    <circle cx="100" cy="163" r="10" fill="#FFF0DE"/>
+    <ellipse cx="60" cy="178" rx="10" ry="8" fill="#E8D4BB"/>
+    <ellipse cx="100" cy="180" rx="10" ry="8" fill="#E8D4BB"/>
+    <path d="M 55 120 Q 80 125 105 120" stroke="#FF9B85" stroke-width="4" fill="none"/>
+    <circle cx="80" cy="123" r="3.5" fill="#FFD98E"/>
+    <ellipse cx="80" cy="88" rx="46" ry="38" fill="#F5E6D3"/>
+    <circle cx="50" cy="98" r="14" fill="#FFF0DE"/>
+    <circle cx="110" cy="98" r="14" fill="#FFF0DE"/>
+    <ellipse cx="52" cy="65" rx="15" ry="21" fill="#E8D4BB" transform="rotate(-25 52 65)"/>
+    <ellipse cx="108" cy="65" rx="15" ry="21" fill="#E8D4BB" transform="rotate(25 108 65)"/>
+    <circle cx="68" cy="88" r="7" fill="#2D2438"/>
+    <circle cx="92" cy="88" r="7" fill="#2D2438"/>
+    <circle cx="70" cy="85" r="2.8" fill="white"/>
+    <circle cx="94" cy="85" r="2.8" fill="white"/>
+    <ellipse cx="80" cy="104" rx="15" ry="10" fill="#FFE4CC"/>
+    <ellipse cx="80" cy="100" rx="5.5" ry="4.5" fill="#2D2438"/>
+    <path d="M 70 112 Q 80 120 90 112" stroke="#2D2438" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="80" cy="116" rx="5" ry="3" fill="#FF9B85"/>
+    <!-- Cachorrito (bebé fluffy) al lado derecho -->
+    <ellipse cx="150" cy="160" rx="26" ry="22" fill="#F5E6D3"/>
+    <circle cx="138" cy="158" r="7" fill="#FFF0DE"/>
+    <circle cx="162" cy="158" r="7" fill="#FFF0DE"/>
+    <ellipse cx="150" cy="138" rx="23" ry="20" fill="#F5E6D3"/>
+    <ellipse cx="137" cy="124" rx="7" ry="10" fill="#E8D4BB" transform="rotate(-25 137 124)"/>
+    <ellipse cx="163" cy="124" rx="7" ry="10" fill="#E8D4BB" transform="rotate(25 163 124)"/>
+    <circle cx="144" cy="138" r="4" fill="#2D2438"/>
+    <circle cx="156" cy="138" r="4" fill="#2D2438"/>
+    <circle cx="145" cy="136.5" r="1.5" fill="white"/>
+    <circle cx="157" cy="136.5" r="1.5" fill="white"/>
+    <ellipse cx="150" cy="148" rx="8" ry="5" fill="#FFE4CC"/>
+    <ellipse cx="150" cy="146" rx="3" ry="2.5" fill="#2D2438"/>
+    <path d="M 145 152 Q 150 156 155 152" stroke="#2D2438" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <!-- corazoncito entre ambos -->
+    <path d="M 118 78 L 114 75 Q 110 72 110 77 Q 110 82 118 88 Q 126 82 126 77 Q 126 72 122 75 Z" fill="#FF9B85" opacity="0.7"/>
+  </svg>`,
+
+  // Fase 5: Abuelo sabio con gafas
+  5: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="100" cy="135" rx="62" ry="48" fill="#F5E6D3"/>
+    <circle cx="68" cy="125" r="13" fill="#FFFFFF"/>
+    <circle cx="132" cy="125" r="13" fill="#FFFFFF"/>
+    <circle cx="75" cy="155" r="12" fill="#FFFFFF"/>
+    <circle cx="125" cy="155" r="12" fill="#FFFFFF"/>
+    <circle cx="100" cy="170" r="10" fill="#FFFFFF"/>
+    <ellipse cx="78" cy="178" rx="12" ry="9" fill="#E8D4BB"/>
+    <ellipse cx="122" cy="178" rx="12" ry="9" fill="#E8D4BB"/>
+    <!-- bufanda de abuelo -->
+    <path d="M 60 115 Q 100 125 140 115 L 140 130 Q 100 135 60 130 Z" fill="#B8A6D9"/>
+    <rect x="56" y="125" width="8" height="18" fill="#B8A6D9"/>
+    <rect x="136" y="125" width="8" height="18" fill="#B8A6D9"/>
+    <ellipse cx="100" cy="78" rx="52" ry="44" fill="#F5E6D3"/>
+    <!-- pelo canoso en cabeza -->
+    <circle cx="65" cy="90" r="16" fill="#FFFFFF"/>
+    <circle cx="135" cy="90" r="16" fill="#FFFFFF"/>
+    <circle cx="75" cy="55" r="10" fill="#FFFFFF"/>
+    <circle cx="125" cy="55" r="10" fill="#FFFFFF"/>
+    <ellipse cx="68" cy="52" rx="17" ry="24" fill="#D8C0B5" transform="rotate(-25 68 52)"/>
+    <ellipse cx="132" cy="52" rx="17" ry="24" fill="#D8C0B5" transform="rotate(25 132 52)"/>
+    <!-- GAFAS -->
+    <circle cx="83" cy="80" r="14" fill="none" stroke="#2D2438" stroke-width="2.5"/>
+    <circle cx="117" cy="80" r="14" fill="none" stroke="#2D2438" stroke-width="2.5"/>
+    <line x1="97" y1="80" x2="103" y2="80" stroke="#2D2438" stroke-width="2.5"/>
+    <!-- reflejo gafas -->
+    <path d="M 74 74 Q 78 72 82 74" stroke="#E8F0FF" stroke-width="2" fill="none"/>
+    <path d="M 108 74 Q 112 72 116 74" stroke="#E8F0FF" stroke-width="2" fill="none"/>
+    <!-- ojos detrás de gafas -->
+    <circle cx="83" cy="80" r="6" fill="#2D2438"/>
+    <circle cx="117" cy="80" r="6" fill="#2D2438"/>
+    <circle cx="85" cy="77" r="2" fill="white"/>
+    <circle cx="119" cy="77" r="2" fill="white"/>
+    <!-- cejas canosas -->
+    <path d="M 70 65 Q 83 60 95 66" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M 105 66 Q 117 60 130 65" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="100" cy="100" rx="19" ry="13" fill="#FFE4CC"/>
+    <ellipse cx="100" cy="95" rx="7" ry="5.5" fill="#2D2438"/>
+    <!-- bigote blanco -->
+    <path d="M 80 110 Q 90 105 100 110 Q 110 105 120 110" stroke="#FFFFFF" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M 88 113 Q 100 118 112 113" stroke="#2D2438" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </svg>`
+};
+
+// SVG especial: caja con cachorrito asomado (onboarding)
+const MASCOTA_CAJA = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- caja -->
+  <path d="M 40 110 L 40 175 L 160 175 L 160 110 Z" fill="#D4A77C" stroke="#9C7A5C" stroke-width="2"/>
+  <path d="M 40 110 L 160 110 L 155 100 L 45 100 Z" fill="#B8885E" stroke="#9C7A5C" stroke-width="2"/>
+  <path d="M 100 100 L 100 175" stroke="#9C7A5C" stroke-width="2"/>
+  <path d="M 40 140 L 160 140" stroke="#9C7A5C" stroke-width="1" stroke-dasharray="3 3"/>
+  <!-- lazo rojo -->
+  <rect x="95" y="95" width="10" height="85" fill="#FF9B85"/>
+  <path d="M 85 90 Q 75 85 85 95 Q 95 100 100 95 Q 105 100 115 95 Q 125 85 115 90 Z" fill="#FF9B85" stroke="#D97B68" stroke-width="1"/>
+  <circle cx="100" cy="93" r="4" fill="#FFD98E"/>
+  <!-- cachorrito asomando -->
+  <ellipse cx="100" cy="85" rx="28" ry="24" fill="#F5E6D3"/>
+  <circle cx="78" cy="92" r="9" fill="#FFF0DE"/>
+  <circle cx="122" cy="92" r="9" fill="#FFF0DE"/>
+  <ellipse cx="82" cy="68" rx="9" ry="13" fill="#E8D4BB" transform="rotate(-25 82 68)"/>
+  <ellipse cx="118" cy="68" rx="9" ry="13" fill="#E8D4BB" transform="rotate(25 118 68)"/>
+  <circle cx="90" cy="85" r="5" fill="#2D2438"/>
+  <circle cx="110" cy="85" r="5" fill="#2D2438"/>
+  <circle cx="91.5" cy="83" r="1.8" fill="white"/>
+  <circle cx="111.5" cy="83" r="1.8" fill="white"/>
+  <ellipse cx="100" cy="97" rx="10" ry="6" fill="#FFE4CC"/>
+  <ellipse cx="100" cy="94" rx="3.5" ry="2.8" fill="#2D2438"/>
+  <path d="M 94 103 Q 100 108 106 103" stroke="#2D2438" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+/* ==========================================================================
+   ESTADO DEL JUEGO (localStorage)
+   ========================================================================== */
+
+const DEFAULT_STATE = {
+  name: "Valeria",
+  mascotName: "",  // vacío = dispara onboarding
+  xp: 0,
+  nivelLetras: 1,
+  nivelNums: 1,
+  // historial por módulo
+  historialLetras: { dictado: [], lexica: [], comprension: [], discrim: [], omision: [] },
+  historialNums: { contar: [], multiplicacion: [], tablas: [], valorpos: [], comparar: [], suma: [] },
+  // ítems vistos recientemente
+  recientes: { palabras: [], pseudopalabras: [], textos: [] },
+  lastSession: null,
+  totalSessions: 0,
+  totalSessionsLetras: 0,
+  totalSessionsNums: 0,
+  toggleBtnEnd: 0,
+  currentModule: "letras"
+};
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem("fluffyState");
+    if (!saved) return { ...DEFAULT_STATE };
+    return { ...DEFAULT_STATE, ...JSON.parse(saved) };
+  } catch (e) {
+    return { ...DEFAULT_STATE };
+  }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem("fluffyState", JSON.stringify(state));
+  } catch (e) { console.warn("No se pudo guardar el estado", e); }
+}
+
+// Umbrales de XP para cada fase de crecimiento
+// Cada sesión da ~10 XP. Con esto el abuelo llega a ~60+ sesiones.
+const XP_THRESHOLDS = [0, 30, 100, 250, 500, 900]; // fase 0..5
+const XP_MAX_DISPLAY = XP_THRESHOLDS[XP_THRESHOLDS.length - 1]; // tope para la barra visual
+
+function mascotPhase() {
+  const xp = state.xp;
+  for (let i = XP_THRESHOLDS.length - 1; i >= 0; i--) {
+    if (xp >= XP_THRESHOLDS[i]) return i;
+  }
+  return 0;
+}
+
+function mascotNextMilestone() {
+  const xp = state.xp;
+  for (let i = 0; i < XP_THRESHOLDS.length; i++) {
+    if (xp < XP_THRESHOLDS[i]) return XP_THRESHOLDS[i];
+  }
+  return XP_MAX_DISPLAY; // ya al máximo visual, pero XP sigue subiendo
+}
+
+function updateMascotAll() {
+  const svg = MASCOTA_SVG[mascotPhase()];
+  const homeEl = document.getElementById("mascot-home");
+  const miniEl = document.getElementById("mascot-mini");
+  const endEl = document.getElementById("mascot-end");
+  const hubEl = document.getElementById("mascot-hub");
+  if (homeEl) homeEl.innerHTML = svg;
+  if (miniEl) miniEl.innerHTML = svg;
+  if (endEl) endEl.innerHTML = svg;
+  if (hubEl) hubEl.innerHTML = svg;
+  // Barra XP
+  const phase = mascotPhase();
+  const thisTh = XP_THRESHOLDS[phase];
+  const nextTh = XP_THRESHOLDS[phase + 1] || (state.xp + 100);
+  const segmentPct = Math.min(100, ((state.xp - thisTh) / (nextTh - thisTh)) * 100);
+  const xpFill = document.getElementById("xp-fill");
+  const xpFillEnd = document.getElementById("xp-fill-end");
+  const xpFillHub = document.getElementById("xp-fill-hub");
+  if (xpFill) xpFill.style.width = segmentPct + "%";
+  if (xpFillEnd) xpFillEnd.style.width = segmentPct + "%";
+  if (xpFillHub) xpFillHub.style.width = segmentPct + "%";
+  const nameEl = document.getElementById("mascot-name");
+  const greetEl = document.getElementById("greeting-name");
+  const hubNameEl = document.getElementById("hub-name");
+  if (nameEl) nameEl.textContent = state.mascotName;
+  if (greetEl) greetEl.textContent = state.name;
+  if (hubNameEl) hubNameEl.textContent = state.name;
+}
+
+/* ==========================================================================
+   PROGRESIÓN SILENCIOSA
+   ========================================================================== */
+
+function updateLevel(exerciseType, correct) {
+  // Seleccionar historial y nivel según módulo activo
+  const isLetras = state.currentModule === "letras";
+  const histKey = isLetras ? "historialLetras" : "historialNums";
+  const nivelKey = isLetras ? "nivelLetras" : "nivelNums";
+
+  if (!state[histKey][exerciseType]) state[histKey][exerciseType] = [];
+  state[histKey][exerciseType].push(correct ? 1 : 0);
+  if (state[histKey][exerciseType].length > 10) {
+    state[histKey][exerciseType].shift();
+  }
+  // Agregado del historial del módulo
+  const all = [];
+  Object.keys(state[histKey]).forEach(k => all.push(...(state[histKey][k] || [])));
+  if (all.length >= 10) {
+    const avg = all.reduce((s, v) => s + v, 0) / all.length;
+    if (avg >= 0.8 && state[nivelKey] < 6) {
+      state[nivelKey]++;
+      // reset del historial de ese módulo
+      Object.keys(state[histKey]).forEach(k => state[histKey][k] = []);
+    } else if (avg < 0.5 && state[nivelKey] > 1) {
+      state[nivelKey]--;
+      Object.keys(state[histKey]).forEach(k => state[histKey][k] = []);
+    }
+  }
+}
+
+function currentNivel() {
+  return state.currentModule === "letras" ? state.nivelLetras : state.nivelNums;
+}
+
+function markRecent(type, id) {
+  const arr = state.recientes[type];
+  arr.push(id);
+  if (arr.length > 30) arr.shift();
+}
+
+function pickPalabra() {
+  const candidatas = PALABRAS.filter(p => p.n === currentNivel());
+  const noVistas = candidatas.filter(p => !state.recientes.palabras.includes(p.p));
+  const pool = noVistas.length > 0 ? noVistas : candidatas;
+  const picked = pool[Math.floor(Math.random() * pool.length)];
+  markRecent("palabras", picked.p);
+  return picked;
+}
+
+function pickPseudopalabra() {
+  const candidatas = PSEUDOPALABRAS.filter(p => p.n === currentNivel());
+  const noVistas = candidatas.filter(p => !state.recientes.pseudopalabras.includes(p.p));
+  const pool = noVistas.length > 0 ? noVistas : candidatas;
+  const picked = pool[Math.floor(Math.random() * pool.length)];
+  markRecent("pseudopalabras", picked.p);
+  return picked;
+}
+
+function pickTexto() {
+  const candidatos = TEXTOS.filter(t => t.n === currentNivel());
+  const noVistos = candidatos.filter(t => !state.recientes.textos.includes(t.id));
+  const pool = noVistos.length > 0 ? noVistos : candidatos;
+  const picked = pool[Math.floor(Math.random() * pool.length)];
+  markRecent("textos", picked.id);
+  return picked;
+}
+
+/* ==========================================================================
+   AUDIO (TTS + melodía Web Audio)
+   ========================================================================== */
+
+let currentUtterance = null;
+let audioCtx = null;
+
+function getAudioCtx() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch (e) { console.warn("AudioContext no disponible", e); }
+  }
+  return audioCtx;
+}
+
+function playNote(freq, startOffset, duration, volume = 0.18) {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "sine";
+  osc.frequency.value = freq;
+  const t0 = ctx.currentTime + startOffset;
+  gain.gain.setValueAtTime(0, t0);
+  gain.gain.linearRampToValueAtTime(volume, t0 + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(t0);
+  osc.stop(t0 + duration);
+}
+
+function playMelodyWelcome() {
+  // Pentatónica alegre tipo juguete
+  const notes = [
+    { f: 523.25, t: 0,    d: 0.18 }, // C5
+    { f: 659.25, t: 0.14, d: 0.18 }, // E5
+    { f: 783.99, t: 0.28, d: 0.18 }, // G5
+    { f: 1046.5, t: 0.42, d: 0.30 }  // C6
+  ];
+  notes.forEach(n => playNote(n.f, n.t, n.d));
+}
+
+function playMelodySuccess() {
+  const notes = [
+    { f: 659.25, t: 0,    d: 0.12 },
+    { f: 783.99, t: 0.10, d: 0.12 },
+    { f: 1046.5, t: 0.20, d: 0.22 }
+  ];
+  notes.forEach(n => playNote(n.f, n.t, n.d, 0.14));
+}
+
+function speak(text, onEnd) {
+  try {
+    if (currentUtterance) speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "es-ES";
+    u.rate = 0.82;
+    u.pitch = 1.0;
+    if (onEnd) u.onend = onEnd;
+    currentUtterance = u;
+    speechSynthesis.speak(u);
+  } catch (e) { console.warn("TTS no disponible", e); if (onEnd) onEnd(); }
+}
+
+/* ==========================================================================
+   SESIÓN: 4 EJERCICIOS
+   ========================================================================== */
+
+let sessionExercises = [];
+let sessionIndex = 0;
+let sessionCorrect = 0;
+let sessionXpGained = 0;
+
+// Rotación letras: cubre discrim, léxica, omisión en 3 sesiones
+const ROTACION_SLOTS_LETRAS = [
+  ["discrim", "lexica"],
+  ["omision", "discrim"],
+  ["lexica", "omision"]
+];
+
+// Rotación números: 6 ejercicios. Mezcla de 5 tipos (contar, grupos/multi, tablas, valor posicional, comparar, suma)
+// La multiplicación visual es el eje central; tablas aparecen una vez por sesión.
+const ROTACION_SLOTS_NUMS = [
+  ["contar", "multiplicacion", "tablas", "valorpos", "comparar", "suma"],
+  ["contar", "tablas", "comparar", "multiplicacion", "suma", "valorpos"],
+  ["suma", "contar", "multiplicacion", "tablas", "valorpos", "comparar"]
+];
+
+function buildSession() {
+  if (state.currentModule === "numeros") {
+    const totalSes = state.totalSessionsNums || 0;
+    return [...ROTACION_SLOTS_NUMS[totalSes % 3]];
+  }
+  // letras (por defecto)
+  const totalSes = state.totalSessionsLetras || 0;
+  const [s1, s2] = ROTACION_SLOTS_LETRAS[totalSes % 3];
+  return ["dictado", s1, s2, "dictado", "comprension"];
+}
+
+function startSession() {
+  sessionExercises = buildSession();
+  sessionIndex = 0;
+  sessionCorrect = 0;
+  sessionXpGained = 0;
+  renderProgressDots();
+  goScreen("session");
+  nextExercise();
+}
+
+function renderProgressDots() {
+  const container = document.getElementById("progress-dots");
+  container.innerHTML = "";
+  sessionExercises.forEach((_, i) => {
+    const dot = document.createElement("div");
+    dot.className = "progress-dot";
+    if (i < sessionIndex) dot.classList.add("done");
+    if (i === sessionIndex) dot.classList.add("active");
+    container.appendChild(dot);
+  });
+}
+
+function nextExercise() {
+  if (sessionIndex >= sessionExercises.length) {
+    endSession();
+    return;
+  }
+  renderProgressDots();
+  const type = sessionExercises[sessionIndex];
+  // Letras
+  if (type === "dictado") renderDictado();
+  else if (type === "lexica") renderLexica();
+  else if (type === "comprension") renderComprension();
+  else if (type === "discrim") renderDiscrim();
+  else if (type === "omision") renderOmision();
+  // Números
+  else if (type === "contar") renderContar();
+  else if (type === "multiplicacion") renderMultiplicacion();
+  else if (type === "tablas") renderTablas();
+  else if (type === "valorpos") renderValorPosicional();
+  else if (type === "comparar") renderComparar();
+  else if (type === "suma") renderSuma();
+}
+
+function showFeedback(correct, callback) {
+  const fb = document.getElementById("feedback");
+  const emoji = document.getElementById("feedback-emoji");
+  const text = document.getElementById("feedback-text");
+  if (correct) {
+    const positives = ["⭐", "🌟", "✨", "🎉", "💫"];
+    const msgs = ["¡Muy bien!", "¡Genial!", "¡Fantástico!", "¡Súper!", "¡Bravo!"];
+    emoji.textContent = positives[Math.floor(Math.random() * positives.length)];
+    text.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+  } else {
+    emoji.textContent = "💛";
+    text.textContent = "¡Casi! Sigue así.";
+  }
+  fb.classList.add("show");
+  setTimeout(() => {
+    fb.classList.remove("show");
+    callback();
+  }, 1500);
+}
+
+function finishExercise(type, correct) {
+  if (correct) {
+    sessionCorrect++;
+    sessionXpGained += 2;
+    state.xp += 2;
+  } else {
+    sessionXpGained += 1;
+    state.xp += 1; // participar siempre suma, aunque menos
+  }
+  updateLevel(type, correct);
+  saveState();
+  showFeedback(correct, () => {
+    sessionIndex++;
+    nextExercise();
+  });
+}
+
+/* ---------- DICTADO ---------- */
+let dictadoBuilt = [];
+let dictadoErrores = 0;
+
+// Frases que introducen la palabra con contexto Fluffy (neutras de género)
+function fluffyIntro() {
+  const fluffy = state.mascotName || "Fluffy";
+  const intros = [
+    `Mira lo que ${fluffy} ha encontrado:`,
+    `${fluffy} te enseña esto:`,
+    `${fluffy} quiere escribir:`,
+    `¡Ayuda a ${fluffy} a escribirlo!`,
+    `${fluffy} dice... ¿qué es?`,
+    `${fluffy} descubrió esto hoy:`,
+    `${fluffy} te lo muestra:`,
+    `${fluffy} señala:`
+  ];
+  return intros[Math.floor(Math.random() * intros.length)];
+}
+
+function renderDictado() {
+  const palabra = pickPalabra();
+  // reset estado
+  dictadoBuilt = [];
+  dictadoErrores = 0;
+
+  const container = document.getElementById("exercise-container");
+
+  // Mezclar las sílabas
+  const silabasMezcladas = [...palabra.s].sort(() => Math.random() - 0.5);
+  // asegurarnos que no queden en orden correcto
+  if (palabra.s.length > 1 && silabasMezcladas.join() === palabra.s.join()) {
+    [silabasMezcladas[0], silabasMezcladas[1]] = [silabasMezcladas[1], silabasMezcladas[0]];
+  }
+
+  container.innerHTML = `
+    <div class="fluffy-intro">${fluffyIntro()}</div>
+    <div class="dictado-emoji">${palabra.e}</div>
+    <button class="sound-btn" id="sound-btn" aria-label="Escuchar palabra">🔊</button>
+    <div class="hint">Ordena las sílabas</div>
+    <div class="syllables-built" id="syllables-built"></div>
+    <div class="syllables-pool" id="syllables-pool"></div>
+  `;
+
+  const pool = document.getElementById("syllables-pool");
+  silabasMezcladas.forEach((sil, i) => {
+    const b = document.createElement("button");
+    b.className = "btn btn-syllable";
+    b.textContent = sil;
+    b.dataset.silaba = sil;
+    b.dataset.idx = i;
+    b.onclick = () => handleSilabaClick(b, palabra);
+    pool.appendChild(b);
+  });
+
+  document.getElementById("sound-btn").onclick = () => playSound(palabra.p);
+  setTimeout(() => playSound(palabra.p), 400);
+}
+
+function playSound(word) {
+  const btn = document.getElementById("sound-btn");
+  if (btn) btn.classList.add("playing");
+  speak(word, () => { if (btn) btn.classList.remove("playing"); });
+}
+
+let dictadoBuilt_declarado = true; // solo marcador
+
+function handleSilabaClick(btn, palabra) {
+  const sil = btn.dataset.silaba;
+  const expected = palabra.s[dictadoBuilt.length];
+  if (sil === expected) {
+    dictadoBuilt.push(sil);
+    btn.classList.add("used");
+    btn.disabled = true;
+    const builtBox = document.getElementById("syllables-built");
+    const span = document.createElement("span");
+    span.textContent = sil;
+    builtBox.appendChild(span);
+    // ¿completado?
+    if (dictadoBuilt.length === palabra.s.length) {
+      // acierto si 0-1 errores (margen de dislexia)
+      const correct = dictadoErrores <= 1;
+      setTimeout(() => {
+        dictadoBuilt = [];
+        dictadoErrores = 0;
+        finishExercise("dictado", correct);
+      }, 600);
+    }
+  } else {
+    dictadoErrores++;
+    btn.classList.add("tap-err");
+    setTimeout(() => btn.classList.remove("tap-err"), 400);
+    // Después de 3 errores en la misma palabra, ayudamos: marcamos la correcta sutilmente
+    if (dictadoErrores >= 3) {
+      const pool = document.getElementById("syllables-pool");
+      [...pool.children].forEach(b => {
+        if (b.dataset.silaba === expected && !b.disabled) {
+          b.style.boxShadow = "0 0 0 4px var(--sun)";
+        }
+      });
+    }
+  }
+}
+
+/* ---------- DISCRIMINACIÓN VISUAL (letras/símbolos diferentes) ---------- */
+
+// Pares problemáticos: [letra_base, letra_diferente]
+// Los pares se eligen según nivel para progresar en dificultad
+const DISCRIM_PARES = {
+  1: [["b","d"],["d","b"],["p","q"],["q","p"],["u","n"]],
+  2: [["b","d"],["d","b"],["p","q"],["q","p"],["m","n"],["n","m"],["u","n"]],
+  3: [["b","d"],["p","q"],["m","n"],["n","u"],["a","o"],["o","a"],["c","e"]],
+  4: [["b","d"],["p","q"],["a","o"],["c","e"],["l","i"],["i","l"],["r","n"]],
+  5: [["ba","da"],["pa","qa"],["bo","do"],["po","qo"],["da","ba"],["qu","gu"]],
+  6: [["ban","dan"],["pol","qol"],["dar","bar"],["mar","nar"],["pro","bro"]]
+};
+
+function renderDiscrim() {
+  const nivel = currentNivel();
+  const pares = DISCRIM_PARES[nivel] || DISCRIM_PARES[1];
+  const par = pares[Math.floor(Math.random() * pares.length)];
+  const base = par[0];
+  const distinta = par[1];
+
+  // Tamaño del grid según nivel
+  const gridSizes = {1:{c:3,r:3}, 2:{c:4,r:3}, 3:{c:5,r:4}, 4:{c:6,r:4}, 5:{c:6,r:5}, 6:{c:7,r:5}};
+  const size = gridSizes[nivel] || gridSizes[1];
+  const total = size.c * size.r;
+  const posDistinta = Math.floor(Math.random() * total);
+
+  const container = document.getElementById("exercise-container");
+  const fluffy = state.mascotName || "Fluffy";
+  container.innerHTML = `
+    <div class="fluffy-intro">${fluffy} dice: encuentra la diferente</div>
+    <div class="hint">Una es distinta. ¿Cuál es?</div>
+    <div class="discrim-grid" id="discrim-grid" style="grid-template-columns: repeat(${size.c}, 1fr);"></div>
+  `;
+
+  const grid = document.getElementById("discrim-grid");
+  let discriErrors = 0;
+  for (let i = 0; i < total; i++) {
+    const cell = document.createElement("button");
+    cell.className = "discrim-cell";
+    const esDistinta = i === posDistinta;
+    cell.textContent = esDistinta ? distinta : base;
+    cell.onclick = () => {
+      if (esDistinta) {
+        cell.classList.add("found");
+        // deshabilitar todas
+        [...grid.children].forEach(c => c.disabled = true);
+        setTimeout(() => finishExercise("discrim", discriErrors <= 1), 700);
+      } else {
+        discriErrors++;
+        cell.classList.add("tap-err");
+        setTimeout(() => cell.classList.remove("tap-err"), 400);
+      }
+    };
+    grid.appendChild(cell);
+  }
+}
+
+/* ---------- OMISIÓN DE SÍLABA ---------- */
+
+function pickSilabaAQuitar(palabra) {
+  const n = palabra.s.length;
+  if (n === 1) return 0;
+  if (n === 2) return Math.floor(Math.random() * 2);
+  if (n === 3) return 1; // la del medio es la más desafiante cognitivamente
+  // 4+ sílabas: elige del medio (no la primera ni la última)
+  return 1 + Math.floor(Math.random() * (n - 2));
+}
+
+function computeResultado(palabra, idxRemove) {
+  return palabra.s.filter((_, i) => i !== idxRemove).join("");
+}
+
+function renderOmision() {
+  // Elegir palabra con al menos 2 sílabas
+  let palabra = pickPalabra();
+  let tries = 0;
+  while (palabra.s.length < 2 && tries < 8) {
+    palabra = pickPalabra();
+    tries++;
+  }
+  if (palabra.s.length < 2) {
+    finishExercise("omision", true);
+    return;
+  }
+
+  const idxRemove = pickSilabaAQuitar(palabra);
+  const silabaQuitar = palabra.s[idxRemove];
+  const resultado = computeResultado(palabra, idxRemove);
+
+  const container = document.getElementById("exercise-container");
+  const fluffy = state.mascotName || "Fluffy";
+  container.innerHTML = `
+    <div class="fluffy-intro">${fluffy} te reta</div>
+    <div class="omision-question">
+      Tengo <strong>${palabra.p}</strong><br>
+      Quiero decir <strong>${resultado}</strong><br>
+      <span style="font-size:1.1rem;color:var(--soft-ink);font-weight:400;">¿Qué sílaba sobra?</span>
+    </div>
+    <button class="sound-btn" id="sound-btn" aria-label="Escuchar">🔊</button>
+    <div class="omision-silabas" id="omision-silabas"></div>
+  `;
+
+  const box = document.getElementById("omision-silabas");
+  let errores = 0;
+  palabra.s.forEach((sil, i) => {
+    const btn = document.createElement("button");
+    btn.className = "btn btn-syllable";
+    btn.textContent = sil;
+    btn.onclick = () => {
+      if (i === idxRemove) {
+        btn.classList.add("removed");
+        [...box.children].forEach(c => c.disabled = true);
+        // TTS lee palabra original y resultado como refuerzo
+        setTimeout(() => speak(`${palabra.p}, sin ${silabaQuitar}, es ${resultado}`), 500);
+        setTimeout(() => finishExercise("omision", errores <= 1), 2600);
+      } else {
+        errores++;
+        btn.classList.add("tap-err");
+        setTimeout(() => btn.classList.remove("tap-err"), 400);
+      }
+    };
+    box.appendChild(btn);
+  });
+
+  // TTS inicial: dice palabra y resultado
+  const sayInstruction = () => speak(`${palabra.p}. Quiero decir ${resultado}. ¿Qué sobra?`);
+  document.getElementById("sound-btn").onclick = sayInstruction;
+  setTimeout(sayInstruction, 500);
+}
+
+/* ---------- DECISIÓN LÉXICA ---------- */
+function renderLexica() {
+  // 60% palabra real, 40% pseudopalabra
+  const esReal = Math.random() < 0.6;
+  let item, word;
+  if (esReal) { item = pickPalabra(); word = item.p; }
+  else { item = pickPseudopalabra(); word = item.p; }
+  const esRealFinal = esReal;
+
+  const container = document.getElementById("exercise-container");
+  container.innerHTML = `
+    <div class="decision-hint">¿Es una palabra de verdad?</div>
+    <div class="decision-word">${word}</div>
+    <div class="decision-buttons">
+      <button class="btn btn-yes" id="btn-yes">SÍ ✓</button>
+      <button class="btn btn-no" id="btn-no">NO ✗</button>
+    </div>
+  `;
+
+  document.getElementById("btn-yes").onclick = () => finishExercise("lexica", esRealFinal === true);
+  document.getElementById("btn-no").onclick = () => finishExercise("lexica", esRealFinal === false);
+}
+
+/* ---------- COMPRENSIÓN ---------- */
+function renderComprension() {
+  const texto = pickTexto();
+  const nombreM = state.mascotName || "Fluffy";
+  const titulo = texto.titulo.replace(/\{m\}/g, nombreM);
+  const textoFinal = texto.texto.replace(/\{m\}/g, nombreM);
+  const pregunta = texto.pregunta.replace(/\{m\}/g, nombreM);
+  const opciones = texto.opciones.map(o => o.replace(/\{m\}/g, nombreM));
+  const container = document.getElementById("exercise-container");
+  container.innerHTML = `
+    <div class="comprension-container">
+      <div class="comprension-text">
+        <h3>${titulo}</h3>
+        <p>${textoFinal}</p>
+      </div>
+      <button class="btn btn-primary" id="btn-terminado" style="font-size:1.3rem;padding:16px 32px;align-self:center;">He terminado de leer</button>
+    </div>
+  `;
+  document.getElementById("btn-terminado").onclick = () => {
+    const cont = document.getElementById("exercise-container");
+    cont.innerHTML = `
+      <div class="comprension-container">
+        <div class="comprension-question">
+          <h3>${pregunta}</h3>
+          <div id="opciones"></div>
+        </div>
+      </div>
+    `;
+    const op = document.getElementById("opciones");
+    opciones.forEach((opt, i) => {
+      const b = document.createElement("button");
+      b.className = "btn btn-option";
+      b.textContent = opt;
+      b.onclick = () => {
+        const correct = i === texto.correcta;
+        b.classList.add(correct ? "correct" : "incorrect");
+        if (!correct) {
+          op.children[texto.correcta].classList.add("correct");
+        }
+        [...op.children].forEach(c => c.disabled = true);
+        setTimeout(() => finishExercise("comprension", correct), 1200);
+      };
+      op.appendChild(b);
+    });
+  };
+}
+
+/* ==========================================================================
+   FIN DE SESIÓN
+   ========================================================================== */
+
+const END_MESSAGES_GOOD = [
+  "¡Tu {m} ha crecido muchísimo contigo!",
+  "¡{m} ha aprendido un montón hoy!",
+  "¡{m} está saltando de alegría!",
+  "¡Cada día lo haces mejor!",
+  "¡{m} te mira con mucho cariño!",
+  "¡Qué orgulloso está {m} de ti!",
+  "¡Hoy has hecho magia con {m}!",
+  "¡{m} quiere darte muchos besitos!"
+];
+const END_MESSAGES_MID = [
+  "¡{m} se lo ha pasado genial contigo!",
+  "¡Has jugado muy bien con {m}!",
+  "¡{m} ha disfrutado mucho!",
+  "¡Qué bien lo has hecho con {m}!",
+  "¡Gracias por cuidar de {m}!"
+];
+const END_MESSAGES_GENTLE = [
+  "¡{m} está feliz de estar contigo!",
+  "¡{m} te quiere un montón!",
+  "¡Seguir jugando con {m} es lo mejor!",
+  "¡{m} te espera para la próxima vez!"
+];
+
+// Frases específicas por módulo (se añaden como prefijo a las generales)
+const END_PREFIX_LETRAS = [
+  "¡Has leído muy bien con {m}! ",
+  "¡Cuántas letras has aprendido con {m}! ",
+  "¡Eres una súper lectora con {m}! ",
+  "¡{m} ha escuchado historias preciosas contigo! "
+];
+const END_PREFIX_NUMS = [
+  "¡Has contado genial con {m}! ",
+  "¡Cuántos números has descubierto con {m}! ",
+  "¡Eres muy buena con los números, {m} está sorprendido! ",
+  "¡{m} no sabía tantas matemáticas, le has enseñado un montón! "
+];
+
+const END_BUTTON_TEXTS = ["Jugar otra vez", "Otra sesión", "¡Más aprendizaje!", "Seguir jugando"];
+
+function pickEndMessage(ratio) {
+  const mascotName = state.mascotName || "Fluffy";
+  let pool;
+  if (ratio >= 0.75) pool = END_MESSAGES_GOOD;
+  else if (ratio >= 0.4) pool = END_MESSAGES_MID;
+  else pool = END_MESSAGES_GENTLE;
+  const modulePool = state.currentModule === "letras" ? END_PREFIX_LETRAS : END_PREFIX_NUMS;
+  const prefix = modulePool[Math.floor(Math.random() * modulePool.length)];
+  const general = pool[Math.floor(Math.random() * pool.length)];
+  return (prefix + general).replace(/\{m\}/g, mascotName);
+}
+
+function endSession() {
+  state.totalSessions = (state.totalSessions || 0) + 1;
+  if (state.currentModule === "letras") {
+    state.totalSessionsLetras = (state.totalSessionsLetras || 0) + 1;
+  } else {
+    state.totalSessionsNums = (state.totalSessionsNums || 0) + 1;
+  }
+  state.lastSession = new Date().toISOString();
+  saveState();
+  updateMascotAll();
+  const msg = document.getElementById("end-message");
+  const ratio = sessionCorrect / sessionExercises.length;
+  msg.innerHTML = pickEndMessage(ratio);
+  document.getElementById("xp-gained").textContent = `+${sessionXpGained} ⭐`;
+  const btnEnd = document.getElementById("btn-end-again");
+  if (btnEnd) {
+    btnEnd.textContent = END_BUTTON_TEXTS[state.toggleBtnEnd % END_BUTTON_TEXTS.length];
+    state.toggleBtnEnd = (state.toggleBtnEnd || 0) + 1;
+  }
+  goScreen("end");
+  playMelodySuccess();
+}
+
+/* ==========================================================================
+   MÓDULO NÚMEROS — 6 mecánicas
+   ========================================================================== */
+
+// Emojis "perrunos" para contar (coherente con Fluffy)
+const NUM_ITEMS = ["🦴", "🍖", "🍪", "🐾", "⭐", "🎾", "🫧", "🍗"];
+
+function randChoice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function rangoPorNivel(nivel) {
+  // Rangos para operaciones según nivel
+  if (nivel === 1) return { max: 5 };
+  if (nivel === 2) return { max: 10 };
+  if (nivel === 3) return { max: 20 };
+  if (nivel === 4) return { max: 50 };
+  if (nivel === 5) return { max: 100 };
+  return { max: 200 };
+}
+
+function generarOpcionesNum(correcta, cantidad = 3, maxDesvio = 3) {
+  // Genera opciones únicas: la correcta + distractores cercanos
+  // Distractores siempre positivos, distintos entre sí y de la correcta
+  const opts = new Set([correcta]);
+  // Primero intenta desvíos simétricos (tanto arriba como abajo)
+  const candidatos = [];
+  for (let d = 1; d <= maxDesvio + 3; d++) {
+    if (correcta - d >= 0) candidatos.push(correcta - d);
+    candidatos.push(correcta + d);
+  }
+  // Mezcla los candidatos para variar orden
+  candidatos.sort(() => Math.random() - 0.5);
+  for (const c of candidatos) {
+    if (opts.size >= cantidad) break;
+    if (c !== correcta && c >= 0) opts.add(c);
+  }
+  // Fallback: si aún faltan, añadir números mayores que no colisionen
+  let fill = Math.max(correcta, 0) + maxDesvio + 1;
+  while (opts.size < cantidad) {
+    if (!opts.has(fill)) opts.add(fill);
+    fill++;
+  }
+  return [...opts].sort(() => Math.random() - 0.5);
+}
+
+function renderNumQuestionWithOptions(pregunta, correcta, opciones, callback, exerciseType) {
+  const container = document.getElementById("exercise-container");
+  const fluffy = state.mascotName || "Fluffy";
+  container.innerHTML = `
+    <div class="fluffy-intro">${fluffy} pregunta</div>
+    <div class="num-question">${pregunta}</div>
+    <div class="num-opciones" id="num-opciones"></div>
+  `;
+  const cont = document.getElementById("num-opciones");
+  opciones.forEach(op => {
+    const b = document.createElement("button");
+    b.className = "num-opcion";
+    b.textContent = op;
+    b.onclick = () => {
+      const correct = op === correcta;
+      b.classList.add(correct ? "correct" : "incorrect");
+      if (!correct) {
+        [...cont.children].forEach(c => {
+          if (parseInt(c.textContent) === correcta) c.classList.add("correct");
+        });
+      }
+      [...cont.children].forEach(c => c.disabled = true);
+      setTimeout(() => finishExercise(exerciseType, correct), 1200);
+    };
+    cont.appendChild(b);
+  });
+}
+
+/* ---------- 1. CONTAR (sentido numérico) ---------- */
+function renderContar() {
+  const { max } = rangoPorNivel(currentNivel());
+  let n;
+  if (currentNivel() <= 2) n = 1 + Math.floor(Math.random() * Math.min(max, 6));
+  else n = 3 + Math.floor(Math.random() * Math.min(max - 3, 12));
+  const emoji = randChoice(NUM_ITEMS);
+
+  const container = document.getElementById("exercise-container");
+  const fluffy = state.mascotName || "Fluffy";
+  const intros = [
+    `${fluffy} ve estos ${emoji === "🦴" ? "huesos" : "objetos"}:`,
+    `Ayuda a ${fluffy} a contar:`,
+    `${fluffy} cuenta con tus dedos:`
+  ];
+  container.innerHTML = `
+    <div class="fluffy-intro">${randChoice(intros)}</div>
+    <div class="num-question">¿Cuántos hay?</div>
+    <div class="num-grupos"><div class="num-grupo" id="num-grupo"></div></div>
+    <div class="num-opciones" id="num-opciones"></div>
+  `;
+  const grupo = document.getElementById("num-grupo");
+  for (let i = 0; i < n; i++) {
+    const sp = document.createElement("span");
+    sp.className = "num-item";
+    sp.textContent = emoji;
+    grupo.appendChild(sp);
+  }
+  // TTS
+  setTimeout(() => speak("¿Cuántos hay?"), 400);
+  const ops = generarOpcionesNum(n, 3, 2);
+  const cont = document.getElementById("num-opciones");
+  ops.forEach(op => {
+    const b = document.createElement("button");
+    b.className = "num-opcion";
+    b.textContent = op;
+    b.onclick = () => {
+      const correct = op === n;
+      b.classList.add(correct ? "correct" : "incorrect");
+      if (!correct) {
+        [...cont.children].forEach(c => {
+          if (parseInt(c.textContent) === n) c.classList.add("correct");
+        });
+      }
+      [...cont.children].forEach(c => c.disabled = true);
+      if (correct) setTimeout(() => speak(`${n}. ¡Muy bien!`), 200);
+      setTimeout(() => finishExercise("contar", correct), 1400);
+    };
+    cont.appendChild(b);
+  });
+}
+
+/* ---------- 2. MULTIPLICACIÓN VISUAL (grupos de) ---------- */
+function renderMultiplicacion() {
+  const nivel = currentNivel();
+  // N1-2: grupos pequeños (2-3 grupos de 2-4); N3+: hasta 5x5; N5-6: hasta 6x6
+  let maxGrupos, maxItems;
+  if (nivel <= 2) { maxGrupos = 3; maxItems = 4; }
+  else if (nivel <= 4) { maxGrupos = 5; maxItems = 5; }
+  else { maxGrupos = 6; maxItems = 6; }
+  const nGrupos = 2 + Math.floor(Math.random() * (maxGrupos - 1));
+  const nItems = 2 + Math.floor(Math.random() * (maxItems - 1));
+  const total = nGrupos * nItems;
+  const emoji = randChoice(NUM_ITEMS);
+
+  const container = document.getElementById("exercise-container");
+  const fluffy = state.mascotName || "Fluffy";
+  container.innerHTML = `
+    <div class="fluffy-intro">${fluffy} tiene ${nGrupos} ${nGrupos === 1 ? "plato" : "platos"}</div>
+    <div class="num-question">En cada plato hay <strong>${nItems}</strong><br>¿Cuántos hay en total?</div>
+    <div class="num-grupos" id="num-grupos"></div>
+    <div class="num-opciones" id="num-opciones"></div>
+  `;
+  const cont = document.getElementById("num-grupos");
+  for (let g = 0; g < nGrupos; g++) {
+    const grupo = document.createElement("div");
+    grupo.className = "num-grupo";
+    for (let i = 0; i < nItems; i++) {
+      const sp = document.createElement("span");
+      sp.className = "num-item";
+      sp.textContent = emoji;
+      grupo.appendChild(sp);
+    }
+    cont.appendChild(grupo);
+  }
+  setTimeout(() => speak(`${nGrupos} platos, con ${nItems} en cada uno. ¿Cuántos hay en total?`), 400);
+  const ops = generarOpcionesNum(total, 3, Math.max(2, Math.ceil(total / 4)));
+  const opsCont = document.getElementById("num-opciones");
+  ops.forEach(op => {
+    const b = document.createElement("button");
+    b.className = "num-opcion";
+    b.textContent = op;
+    b.onclick = () => {
+      const correct = op === total;
+      b.classList.add(correct ? "correct" : "incorrect");
+      if (!correct) {
+        [...opsCont.children].forEach(c => {
+          if (parseInt(c.textContent) === total) c.classList.add("correct");
+        });
+      }
+      [...opsCont.children].forEach(c => c.disabled = true);
+      if (correct) setTimeout(() => speak(`${nGrupos} por ${nItems} es ${total}`), 200);
+      setTimeout(() => finishExercise("multiplicacion", correct), 1800);
+    };
+    opsCont.appendChild(b);
+  });
+}
+
+/* ---------- 3. TABLAS DE MULTIPLICAR ---------- */
+function renderTablas() {
+  const nivel = currentNivel();
+  // Selección de tablas según nivel, pero todas disponibles
+  // N1: solo 2, 5, 10. N2: 2,3,5,10. N3+: todas hasta 10.
+  let tablasDisponibles;
+  if (nivel === 1) tablasDisponibles = [2, 5, 10];
+  else if (nivel === 2) tablasDisponibles = [2, 3, 4, 5, 10];
+  else if (nivel === 3) tablasDisponibles = [2, 3, 4, 5, 6, 10];
+  else tablasDisponibles = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const tabla = randChoice(tablasDisponibles);
+  const mult = 1 + Math.floor(Math.random() * 10);
+  const resultado = tabla * mult;
+
+  const container = document.getElementById("exercise-container");
+  const fluffy = state.mascotName || "Fluffy";
+  container.innerHTML = `
+    <div class="fluffy-intro">${fluffy} multiplica</div>
+    <div class="num-question"><strong>${tabla} × ${mult}</strong> = ?</div>
+    <div class="num-opciones" id="num-opciones"></div>
+  `;
+  // Distractores: múltiplos cercanos de la misma tabla, sin duplicados ni negativos
+  const distractoresCand = new Set();
+  [
+    tabla * (mult - 1),
+    tabla * (mult + 1),
+    tabla * mult + tabla - 1,
+    tabla * mult - 1,
+    tabla * mult + 1,
+    tabla * (mult + 2)
+  ].forEach(d => {
+    if (d > 0 && d !== resultado) distractoresCand.add(d);
+  });
+  const distArr = [...distractoresCand].sort(() => Math.random() - 0.5);
+  const opsSet = new Set([resultado]);
+  for (const d of distArr) {
+    if (opsSet.size >= 3) break;
+    opsSet.add(d);
+  }
+  // Fallback si acabamos con <3
+  let fill = resultado + 1;
+  while (opsSet.size < 3) { if (!opsSet.has(fill)) opsSet.add(fill); fill++; }
+  const opsFinal = [...opsSet].sort(() => Math.random() - 0.5);
+  setTimeout(() => speak(`${tabla} por ${mult}`), 400);
+  const opsCont = document.getElementById("num-opciones");
+  opsFinal.forEach(op => {
+    const b = document.createElement("button");
+    b.className = "num-opcion";
+    b.textContent = op;
+    b.onclick = () => {
+      const correct = op === resultado;
+      b.classList.add(correct ? "correct" : "incorrect");
+      if (!correct) {
+        [...opsCont.children].forEach(c => {
+          if (parseInt(c.textContent) === resultado) c.classList.add("correct");
+        });
+      }
+      [...opsCont.children].forEach(c => c.disabled = true);
+      if (correct) setTimeout(() => speak(`${tabla} por ${mult} es ${resultado}`), 200);
+      setTimeout(() => finishExercise("tablas", correct), 1800);
+    };
+    opsCont.appendChild(b);
+  });
+}
+
+/* ---------- 4. VALOR POSICIONAL ---------- */
+function renderValorPosicional() {
+  const nivel = currentNivel();
+  // N1: 1-9 (solo unidades). N2+: decenas y unidades hasta 99.
+  let numero;
+  if (nivel === 1) numero = 1 + Math.floor(Math.random() * 9);
+  else if (nivel === 2) numero = 10 + Math.floor(Math.random() * 40);
+  else if (nivel === 3) numero = 10 + Math.floor(Math.random() * 90);
+  else numero = 20 + Math.floor(Math.random() * 80);
+
+  const decenas = Math.floor(numero / 10);
+  const unidades = numero % 10;
+
+  const container = document.getElementById("exercise-container");
+  const fluffy = state.mascotName || "Fluffy";
+  container.innerHTML = `
+    <div class="fluffy-intro">${fluffy} construye números</div>
+    <div class="num-question">¿Qué número es?</div>
+    <div class="num-decenas-unidades">
+      ${decenas > 0 ? `
+      <div class="num-columna">
+        <div class="num-columna-titulo">Decenas</div>
+        <div class="num-fichas" id="dec-fichas"></div>
+      </div>` : ''}
+      <div class="num-columna">
+        <div class="num-columna-titulo">Unidades</div>
+        <div class="num-fichas" id="uni-fichas"></div>
+      </div>
+    </div>
+    <div class="num-opciones" id="num-opciones"></div>
+  `;
+  if (decenas > 0) {
+    const decCont = document.getElementById("dec-fichas");
+    for (let i = 0; i < decenas; i++) {
+      const f = document.createElement("div");
+      f.className = "num-ficha decena";
+      decCont.appendChild(f);
+    }
+  }
+  const uniCont = document.getElementById("uni-fichas");
+  for (let i = 0; i < unidades; i++) {
+    const f = document.createElement("div");
+    f.className = "num-ficha";
+    uniCont.appendChild(f);
+  }
+  // Distractores: invertir dígitos (error típico), ±1, ±10, sin duplicar
+  const distrSet = new Set([numero]);
+  if (decenas > 0 && unidades > 0 && decenas !== unidades) {
+    const invertido = unidades * 10 + decenas;
+    if (invertido > 0) distrSet.add(invertido);
+  }
+  [numero + 1, numero - 1, numero + 10, numero - 10].forEach(d => {
+    if (d > 0 && d !== numero) distrSet.add(d);
+  });
+  const distArr = [...distrSet];
+  // Quitamos la correcta del array de candidatos para mezclar distractores
+  const soloDist = distArr.filter(x => x !== numero).sort(() => Math.random() - 0.5);
+  const opsSet = new Set([numero]);
+  for (const d of soloDist) {
+    if (opsSet.size >= 3) break;
+    opsSet.add(d);
+  }
+  let fill = numero + 11;
+  while (opsSet.size < 3) { if (!opsSet.has(fill)) opsSet.add(fill); fill++; }
+  const opsFinal = [...opsSet].sort(() => Math.random() - 0.5);
+
+  setTimeout(() => {
+    if (decenas > 0) speak(`${decenas} decenas y ${unidades} unidades. ¿Qué número es?`);
+    else speak(`${unidades} unidades. ¿Qué número es?`);
+  }, 400);
+  const opsCont = document.getElementById("num-opciones");
+  opsFinal.forEach(op => {
+    const b = document.createElement("button");
+    b.className = "num-opcion";
+    b.textContent = op;
+    b.onclick = () => {
+      const correct = op === numero;
+      b.classList.add(correct ? "correct" : "incorrect");
+      if (!correct) {
+        [...opsCont.children].forEach(c => {
+          if (parseInt(c.textContent) === numero) c.classList.add("correct");
+        });
+      }
+      [...opsCont.children].forEach(c => c.disabled = true);
+      if (correct) setTimeout(() => speak(`${numero}`), 200);
+      setTimeout(() => finishExercise("valorpos", correct), 1800);
+    };
+    opsCont.appendChild(b);
+  });
+}
+
+/* ---------- 5. COMPARAR (>, <, =) ---------- */
+function renderComparar() {
+  const { max } = rangoPorNivel(currentNivel());
+  const a = 1 + Math.floor(Math.random() * max);
+  let b;
+  // 25% probabilidad de empate para forzar practicar "="
+  if (Math.random() < 0.25) b = a;
+  else {
+    do { b = 1 + Math.floor(Math.random() * max); } while (b === a);
+  }
+  const emoji = randChoice(NUM_ITEMS);
+
+  const container = document.getElementById("exercise-container");
+  const fluffy = state.mascotName || "Fluffy";
+  container.innerHTML = `
+    <div class="fluffy-intro">${fluffy} compara</div>
+    <div class="num-question">¿Dónde hay más?</div>
+    <div class="num-comparacion">
+      <div class="num-caja" id="caja-a"></div>
+      <div class="num-caja" id="caja-b"></div>
+    </div>
+    <div class="num-comp-ops">
+      <button class="num-comp-op" data-op="a">⬅️</button>
+      <button class="num-comp-op" data-op="igual">=</button>
+      <button class="num-comp-op" data-op="b">➡️</button>
+    </div>
+  `;
+  const cajaA = document.getElementById("caja-a");
+  const cajaB = document.getElementById("caja-b");
+  for (let i = 0; i < a; i++) {
+    const sp = document.createElement("span"); sp.className = "num-item"; sp.textContent = emoji; cajaA.appendChild(sp);
+  }
+  for (let i = 0; i < b; i++) {
+    const sp = document.createElement("span"); sp.className = "num-item"; sp.textContent = emoji; cajaB.appendChild(sp);
+  }
+  const correcta = a > b ? "a" : (b > a ? "b" : "igual");
+  setTimeout(() => speak(`${a} y ${b}. ¿Dónde hay más?`), 400);
+  document.querySelectorAll(".num-comp-op").forEach(btn => {
+    btn.onclick = () => {
+      const op = btn.dataset.op;
+      const correct = op === correcta;
+      btn.classList.add(correct ? "correct" : "incorrect");
+      if (!correct) {
+        document.querySelectorAll(".num-comp-op").forEach(b2 => {
+          if (b2.dataset.op === correcta) b2.classList.add("correct");
+        });
+      }
+      document.querySelectorAll(".num-comp-op").forEach(b2 => b2.disabled = true);
+      if (correct) {
+        setTimeout(() => {
+          if (correcta === "igual") speak("Son iguales");
+          else if (correcta === "a") speak(`Aquí hay más, ${a}`);
+          else speak(`Aquí hay más, ${b}`);
+        }, 200);
+      }
+      setTimeout(() => finishExercise("comparar", correct), 1800);
+    };
+  });
+}
+
+/* ---------- 6. SUMA VISUAL ---------- */
+function renderSuma() {
+  const nivel = currentNivel();
+  let a, b;
+  if (nivel === 1) { a = 1 + Math.floor(Math.random() * 4); b = 1 + Math.floor(Math.random() * 4); }
+  else if (nivel === 2) { a = 1 + Math.floor(Math.random() * 8); b = 1 + Math.floor(Math.random() * 8); }
+  else if (nivel === 3) { a = 1 + Math.floor(Math.random() * 15); b = 1 + Math.floor(Math.random() * 10); }
+  else if (nivel === 4) { a = 10 + Math.floor(Math.random() * 40); b = 1 + Math.floor(Math.random() * 20); }
+  else { a = 20 + Math.floor(Math.random() * 60); b = 10 + Math.floor(Math.random() * 30); }
+  const total = a + b;
+  const emoji = randChoice(NUM_ITEMS);
+  const mostrarVisual = nivel <= 3;
+
+  const container = document.getElementById("exercise-container");
+  const fluffy = state.mascotName || "Fluffy";
+  container.innerHTML = `
+    <div class="fluffy-intro">${fluffy} suma</div>
+    <div class="num-question"><strong>${a} + ${b}</strong> = ?</div>
+    ${mostrarVisual ? `
+    <div class="num-comparacion">
+      <div class="num-caja" id="caja-a"></div>
+      <div style="font-size:2rem;font-weight:800;color:var(--coral);">+</div>
+      <div class="num-caja" id="caja-b"></div>
+    </div>` : ''}
+    <div class="num-opciones" id="num-opciones"></div>
+  `;
+  if (mostrarVisual) {
+    const cajaA = document.getElementById("caja-a");
+    const cajaB = document.getElementById("caja-b");
+    for (let i = 0; i < a; i++) {
+      const sp = document.createElement("span"); sp.className = "num-item"; sp.textContent = emoji; cajaA.appendChild(sp);
+    }
+    for (let i = 0; i < b; i++) {
+      const sp = document.createElement("span"); sp.className = "num-item"; sp.textContent = emoji; cajaB.appendChild(sp);
+    }
+  }
+  setTimeout(() => speak(`${a} más ${b}`), 400);
+  const ops = generarOpcionesNum(total, 3, Math.max(2, Math.ceil(total / 6)));
+  const opsCont = document.getElementById("num-opciones");
+  ops.forEach(op => {
+    const b2 = document.createElement("button");
+    b2.className = "num-opcion";
+    b2.textContent = op;
+    b2.onclick = () => {
+      const correct = op === total;
+      b2.classList.add(correct ? "correct" : "incorrect");
+      if (!correct) {
+        [...opsCont.children].forEach(c => {
+          if (parseInt(c.textContent) === total) c.classList.add("correct");
+        });
+      }
+      [...opsCont.children].forEach(c => c.disabled = true);
+      if (correct) setTimeout(() => speak(`${a} más ${b} es ${total}`), 200);
+      setTimeout(() => finishExercise("suma", correct), 1800);
+    };
+    opsCont.appendChild(b2);
+  });
+}
+
+/* ==========================================================================
+   HUB: entrar a un módulo
+   ========================================================================== */
+
+function enterModule(mod) {
+  state.currentModule = mod;
+  saveState();
+  startSession();
+}
+
+function goHub() {
+  const m = document.getElementById("mascot-hub");
+  if (m) m.innerHTML = MASCOTA_SVG[mascotPhase()];
+  const n = document.getElementById("hub-name");
+  if (n) n.textContent = state.name;
+  updateMascotAll();
+  goScreen("hub");
+}
+
+/* ==========================================================================
+   ONBOARDING (primera vez)
+   ========================================================================== */
+
+const NOMBRES_SUGERIDOS = ["Fluffy", "Toby", "Luna", "Coco", "Nube", "Pipo"];
+
+function initOnboarding() {
+  const boxEl = document.getElementById("box-container");
+  if (boxEl) boxEl.innerHTML = MASCOTA_CAJA;
+
+  const chips = document.getElementById("name-chips");
+  const input = document.getElementById("name-input");
+  const btn = document.getElementById("btn-onboard-go");
+
+  // Limpiar chips
+  chips.innerHTML = "";
+  NOMBRES_SUGERIDOS.forEach(nombre => {
+    const chip = document.createElement("button");
+    chip.className = "name-chip";
+    chip.textContent = nombre;
+    chip.onclick = () => {
+      input.value = nombre;
+      input.focus();
+    };
+    chips.appendChild(chip);
+  });
+
+  // Habilitar/deshabilitar botón según input
+  function updateBtn() {
+    const val = input.value.trim();
+    btn.disabled = val.length < 1;
+    btn.style.opacity = val.length < 1 ? "0.4" : "1";
+  }
+  input.addEventListener("input", updateBtn);
+  updateBtn();
+
+  btn.onclick = () => {
+    const val = input.value.trim() || "Fluffy";
+    state.mascotName = val;
+    saveState();
+    // Melodía + voz de bienvenida personalizada
+    try { getAudioCtx(); playMelodyWelcome(); } catch(e) {}
+    setTimeout(() => {
+      speak(`¡Hola! Tu perrito se llama ${val}. ¡A jugar!`);
+    }, 800);
+    goHub();
+  };
+}
+
+/* ==========================================================================
+   VOZ DE BIENVENIDA AL ARRANQUE
+   ========================================================================== */
+
+function playWelcomeSequence() {
+  try { getAudioCtx(); playMelodyWelcome(); } catch(e) {}
+  setTimeout(() => {
+    const mascot = state.mascotName || "tu perrito";
+    speak(`¡Hola ${state.name}! ${mascot} quiere jugar contigo.`);
+  }, 900);
+}
+
+/* ==========================================================================
+   NAVEGACIÓN
+   ========================================================================== */
+
+function goScreen(name) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById("screen-" + name).classList.add("active");
+  if (name === "home" || name === "end") updateMascotAll();
+}
+
+function goHome() { goHub(); }
+function playAgain() { startSession(); }
+
+/* ==========================================================================
+   INIT
+   ========================================================================== */
+
+// Priming para voces TTS y AudioContext en iOS (necesita un gesto de usuario)
+let audioUnlocked = false;
+function unlockAudio() {
+  if (audioUnlocked) return;
+  audioUnlocked = true;
+  try {
+    speechSynthesis.getVoices();
+    const ctx = getAudioCtx();
+    if (ctx && ctx.state === "suspended") ctx.resume();
+    // Utterance vacía para desbloquear TTS en iOS
+    const u = new SpeechSynthesisUtterance(" ");
+    u.volume = 0;
+    speechSynthesis.speak(u);
+  } catch (e) { console.warn("unlockAudio", e); }
+}
+
+document.addEventListener("touchstart", unlockAudio, { once: true });
+document.addEventListener("click", unlockAudio, { once: true });
+
+// Bloquear zoom por doble tap
+let lastTouch = 0;
+document.addEventListener("touchend", e => {
+  const now = Date.now();
+  if (now - lastTouch < 350) e.preventDefault();
+  lastTouch = now;
+}, { passive: false });
+
+// Arranque: si no hay mascotName, mostrar onboarding; si hay, ir directo a home
+function bootApp() {
+  updateMascotAll();
+  if (!state.mascotName || state.mascotName.length === 0) {
+    initOnboarding();
+    goScreen("onboard");
+  } else {
+    goHub();
+    const hubClickOnce = () => {
+      playWelcomeSequence();
+      document.getElementById("screen-hub").removeEventListener("click", hubClickOnce, true);
+    };
+    setTimeout(() => {
+      const hub = document.getElementById("screen-hub");
+      if (hub) hub.addEventListener("click", hubClickOnce, { capture: true, once: true });
+    }, 100);
+  }
+}
+
+bootApp();
+</script>
+
+</body>
+</html>
