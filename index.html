@@ -741,7 +741,197 @@
       letter-spacing: 0.3em;
     }
 
-    /* ============ HUB (selección módulo) ============ */
+    /* ============ CASA DE FLUFFY ============ */
+    #screen-casa {
+      padding: 0;
+      background: linear-gradient(160deg, #FFE8D6 0%, #FFD4B8 50%, #FFC89C 100%);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .casa-header {
+      padding: 14px 16px 8px;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(8px);
+      flex-shrink: 0;
+      z-index: 5;
+    }
+
+    .casa-nombre-mascota {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: var(--ink);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .necesidades-bars {
+      display: flex;
+      gap: 6px;
+      justify-content: space-between;
+    }
+
+    .necesidad-bar {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 12px;
+      padding: 6px 4px 4px;
+      text-align: center;
+    }
+
+    .necesidad-icono {
+      font-size: 1rem;
+      line-height: 1;
+      margin-bottom: 3px;
+    }
+
+    .necesidad-bar-track {
+      height: 6px;
+      background: rgba(74, 63, 85, 0.12);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .necesidad-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease, background 0.3s ease;
+    }
+
+    .necesidad-bar-fill.alto { background: linear-gradient(90deg, var(--mint), #6BC88A); }
+    .necesidad-bar-fill.medio { background: linear-gradient(90deg, var(--sun), #E8B85C); }
+    .necesidad-bar-fill.bajo { background: linear-gradient(90deg, var(--coral), #D97B68); }
+
+    .casa-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr auto;
+      grid-template-areas:
+        "cocina dormitorio"
+        "bano estudio"
+        "jardin jardin";
+      gap: 8px;
+      padding: 10px;
+      min-height: 0;
+    }
+
+    .habitacion {
+      position: relative;
+      border-radius: 20px;
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      box-shadow: var(--shadow-soft);
+      border: 3px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .habitacion:active { transform: scale(0.97); }
+
+    .habitacion.urgente {
+      animation: urgente-pulse 1.2s ease infinite;
+    }
+
+    @keyframes urgente-pulse {
+      0%, 100% { box-shadow: var(--shadow-soft); }
+      50% { box-shadow: 0 0 0 4px rgba(255, 155, 133, 0.5), var(--shadow-soft); }
+    }
+
+    .habitacion-cocina   { grid-area: cocina;     background: linear-gradient(155deg, #FFE8B8, #FFCE7A); }
+    .habitacion-dormitorio { grid-area: dormitorio; background: linear-gradient(155deg, #D8C9E8, #B8A6D9); }
+    .habitacion-bano     { grid-area: bano;       background: linear-gradient(155deg, #C8E4F5, #A0C8E0); }
+    .habitacion-estudio  { grid-area: estudio;    background: linear-gradient(155deg, #E8D8C4, #C8A888); }
+    .habitacion-jardin   { grid-area: jardin;     background: linear-gradient(155deg, #D4F0C8, #A8D894); min-height: 120px; }
+
+    .habitacion-label {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: rgba(74, 63, 85, 0.85);
+      background: rgba(255, 255, 255, 0.85);
+      padding: 2px 10px;
+      border-radius: 10px;
+      z-index: 2;
+    }
+
+    .habitacion-icono {
+      font-size: 3rem;
+      opacity: 0.5;
+      filter: saturate(0.8);
+    }
+
+    .habitacion-decor {
+      position: absolute;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* Fluffy posicionado en la habitación activa */
+    .fluffy-en-casa {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      transition: all 0.5s ease;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .fluffy-en-casa svg { width: 100%; height: 100%; animation: float 3s ease-in-out infinite; }
+
+    /* Indicador de necesidad flotando sobre Fluffy */
+    .necesidad-flotante {
+      position: absolute;
+      font-size: 1.8rem;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: bounce-urgente 0.8s ease infinite;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+
+    @keyframes bounce-urgente {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-8px); }
+    }
+
+    /* Accesos secundarios a letras/números */
+    .casa-accesos {
+      display: flex;
+      gap: 10px;
+      padding: 0 10px 12px;
+      flex-shrink: 0;
+    }
+
+    .acceso-directo {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 16px;
+      padding: 10px 12px;
+      border: none;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: var(--shadow-button);
+      transition: transform 0.15s;
+    }
+
+    .acceso-directo:active { transform: translateY(2px); }
+
+    /* ============ HUB (selección módulo) - AHORA SOLO PARA ACCESO DIRECTO ============ */
     #screen-hub {
       align-items: center;
       justify-content: center;
@@ -1053,6 +1243,46 @@
         <div class="hub-btn-label">Mis trofeos<small>Enséñaselos a mamá o papá</small></div>
         <span class="trophy-badge-hub" id="trofeo-badge">0</span>
       </button>
+      <button class="hub-btn" onclick="goCasa()" style="background:#FFE8D6;">
+        <div class="hub-btn-icon" style="background:#FFD4B8;">🏠</div>
+        <div class="hub-btn-label">Volver a la casa<small>Cuidar a Fluffy</small></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- PANTALLA CASA DE FLUFFY -->
+  <div id="screen-casa" class="screen">
+    <div class="casa-header">
+      <div class="casa-nombre-mascota" id="casa-nombre">La casa de Fluffy</div>
+      <div class="necesidades-bars" id="necesidades-bars"></div>
+    </div>
+    <div class="casa-grid" id="casa-grid">
+      <div class="habitacion habitacion-cocina" data-necesidad="hambre" onclick="tocarHabitacion('hambre')">
+        <div class="habitacion-label">Cocina</div>
+        <div class="habitacion-icono">🍲</div>
+      </div>
+      <div class="habitacion habitacion-dormitorio" data-necesidad="energia" onclick="tocarHabitacion('energia')">
+        <div class="habitacion-label">Cama</div>
+        <div class="habitacion-icono">🛏️</div>
+      </div>
+      <div class="habitacion habitacion-bano" data-necesidad="higiene" onclick="tocarHabitacion('higiene')">
+        <div class="habitacion-label">Baño</div>
+        <div class="habitacion-icono">🛁</div>
+      </div>
+      <div class="habitacion habitacion-estudio" data-necesidad="aprender" onclick="tocarHabitacion('aprender')">
+        <div class="habitacion-label">Estudio</div>
+        <div class="habitacion-icono">📚</div>
+      </div>
+      <div class="habitacion habitacion-jardin" data-necesidad="juego" onclick="tocarHabitacion('juego')">
+        <div class="habitacion-label">Jardín</div>
+        <div class="habitacion-icono">🎾</div>
+      </div>
+      <div class="fluffy-en-casa" id="fluffy-casa" style="left: 50%; top: 50%; transform: translate(-50%, -50%);"></div>
+    </div>
+    <div class="casa-accesos">
+      <button class="acceso-directo" onclick="enterModule('letras')">📖 Letras</button>
+      <button class="acceso-directo" onclick="enterModule('numeros')">🔢 Números</button>
+      <button class="acceso-directo" id="acceso-trofeos" onclick="goCanje()" style="display:none;">🏆 <span id="acceso-trofeos-num">0</span></button>
     </div>
   </div>
 
@@ -1445,15 +1675,39 @@ const DEFAULT_STATE = {
   totalSessionsNums: 0,
   toggleBtnEnd: 0,
   currentModule: "letras",
-  // Trofeos
-  trofeosGanados: 0,       // total acumulado histórico
-  trofeosCanjeados: 0,     // total canjeado
-  sesionesParaProximoTrofeo: 0,  // contador 0..1, al llegar a 2 genera trofeo
-  trofeosHoy: 0,           // tope diario
-  fechaTrofeoHoy: "",      // fecha (YYYY-MM-DD) para resetear tope diario
-  // Audio
-  musicaOn: true
+  trofeosGanados: 0,
+  trofeosCanjeados: 0,
+  sesionesParaProximoTrofeo: 0,
+  trofeosHoy: 0,
+  fechaTrofeoHoy: "",
+  musicaOn: true,
+  // NECESIDADES (0-100, 100 = saciado)
+  necesidades: {
+    hambre: 100,
+    higiene: 100,
+    energia: 100,
+    juego: 100,
+    aprender: 100
+  },
+  // timestamp última vez que se calculó el decrecimiento
+  lastNecesidadesUpdate: 0,
+  // contador para trofeo: cuántas necesidades ha atendido hoy (reset diario)
+  cuidadosHoy: 0,
+  fechaCuidadosHoy: ""
 };
+
+// Velocidad de decrecimiento (puntos/hora) - velocidad MEDIA
+// A 100 → 0, tarda ~3 horas para hambre (las más rápidas), ~6 para las más lentas
+const DECRECIMIENTO_POR_HORA = {
+  hambre: 35,    // ~3h en bajar a 0
+  higiene: 20,   // ~5h
+  energia: 25,   // ~4h
+  juego: 30,     // ~3h20min
+  aprender: 15   // ~6h40min
+};
+
+// Tope de horas que se pueden decrecer aunque pase más tiempo
+const MAX_HORAS_DECRECER = 24;
 
 let state = loadState();
 
@@ -1881,14 +2135,54 @@ function finishExercise(type, correct) {
     state.xp += 2;
   } else {
     sessionXpGained += 1;
-    state.xp += 1; // participar siempre suma, aunque menos
+    state.xp += 1;
   }
   updateLevel(type, correct);
+
+  // Si viene de la casa (modo ejercicio único), saciar la necesidad
+  if (modoCasaEjercicio && modoCasaEjercicio.ejercicio === type) {
+    const cantidad = correct ? 40 : 20; // acierto sacia más; intento también sacia algo
+    saciarNecesidad(modoCasaEjercicio.necesidad, cantidad);
+    if (correct) contarCuidadoDiario();
+  }
+
   saveState();
   showFeedback(correct, () => {
     sessionIndex++;
-    nextExercise();
+    // Si el modo casa y solo había 1 ejercicio, volver a casa
+    if (modoCasaEjercicio && sessionIndex >= sessionExercises.length) {
+      const modo = modoCasaEjercicio;
+      modoCasaEjercicio = null;
+      // Pequeña pantalla de "Fluffy ha comido/dormido/etc."
+      showCuidadoFeedback(modo);
+    } else {
+      nextExercise();
+    }
   });
+}
+
+// Muestra un feedback corto de "Fluffy ha sido atendido" y vuelve a casa
+function showCuidadoFeedback(modo) {
+  const info = NECESIDADES_INFO[modo.necesidad];
+  const mensajes = {
+    hambre:   `¡${state.mascotName || "Fluffy"} ha comido genial!`,
+    higiene:  `¡${state.mascotName || "Fluffy"} está limpito y contento!`,
+    energia:  `¡${state.mascotName || "Fluffy"} ha descansado muy bien!`,
+    juego:    `¡${state.mascotName || "Fluffy"} se lo ha pasado en grande!`,
+    aprender: `¡${state.mascotName || "Fluffy"} ha aprendido algo nuevo!`
+  };
+  const msg = mensajes[modo.necesidad] || "¡Muy bien!";
+  const fb = document.getElementById("feedback");
+  const emoji = document.getElementById("feedback-emoji");
+  const text = document.getElementById("feedback-text");
+  if (emoji) emoji.textContent = info.icono;
+  if (text) text.textContent = msg;
+  if (fb) fb.classList.add("show");
+  try { playMelodySuccess(); } catch(e){}
+  setTimeout(() => {
+    if (fb) fb.classList.remove("show");
+    goCasa();
+  }, 2000);
 }
 
 /* ---------- DICTADO ---------- */
@@ -2280,6 +2574,179 @@ function endSession() {
     playMelodySuccess();
     playMusic();
   }
+}
+
+/* ==========================================================================
+   CASA DE FLUFFY — Sistema Tamagotchi
+   ========================================================================== */
+
+const NECESIDADES_INFO = {
+  hambre:   { icono: "🍖", nombre: "Hambre",   habitacion: "cocina",     ejercicio: "dictado" },
+  higiene:  { icono: "🫧", nombre: "Higiene",  habitacion: "bano",       ejercicio: "discrim" },
+  energia:  { icono: "💤", nombre: "Energía",  habitacion: "dormitorio", ejercicio: "comprension" },
+  juego:    { icono: "🎾", nombre: "Jugar",    habitacion: "jardin",     ejercicio: "multiplicacion" },
+  aprender: { icono: "📚", nombre: "Aprender", habitacion: "estudio",    ejercicio: "lexica" }
+};
+
+// Calcula el decrecimiento desde la última actualización y aplica
+function actualizarNecesidades() {
+  const ahora = Date.now();
+  if (!state.lastNecesidadesUpdate) {
+    state.lastNecesidadesUpdate = ahora;
+    return;
+  }
+  const msTranscurridos = ahora - state.lastNecesidadesUpdate;
+  const horasTranscurridas = Math.min(msTranscurridos / (1000 * 60 * 60), MAX_HORAS_DECRECER);
+  if (horasTranscurridas <= 0) return;
+
+  Object.keys(state.necesidades).forEach(key => {
+    const rate = DECRECIMIENTO_POR_HORA[key] || 20;
+    const nuevaValor = state.necesidades[key] - (rate * horasTranscurridas);
+    state.necesidades[key] = Math.max(0, nuevaValor);
+  });
+  state.lastNecesidadesUpdate = ahora;
+  saveState();
+}
+
+// Saciar una necesidad tras un ejercicio acertado (saltos generosos)
+function saciarNecesidad(key, cantidad) {
+  if (!state.necesidades[key]) state.necesidades[key] = 0;
+  state.necesidades[key] = Math.min(100, state.necesidades[key] + cantidad);
+  saveState();
+}
+
+// Contador de cuidados del día (para trofeo narrativo)
+function contarCuidadoDiario() {
+  const hoy = hoyStr();
+  if (state.fechaCuidadosHoy !== hoy) {
+    state.fechaCuidadosHoy = hoy;
+    state.cuidadosHoy = 0;
+  }
+  state.cuidadosHoy = (state.cuidadosHoy || 0) + 1;
+  saveState();
+}
+
+// Render de las 5 barras en la cabecera
+function renderNecesidadesBars() {
+  const cont = document.getElementById("necesidades-bars");
+  if (!cont) return;
+  cont.innerHTML = "";
+  Object.keys(NECESIDADES_INFO).forEach(key => {
+    const info = NECESIDADES_INFO[key];
+    const valor = Math.round(state.necesidades[key] || 0);
+    let nivelClase = "alto";
+    if (valor < 35) nivelClase = "bajo";
+    else if (valor < 65) nivelClase = "medio";
+    const div = document.createElement("div");
+    div.className = "necesidad-bar";
+    div.innerHTML = `
+      <div class="necesidad-icono">${info.icono}</div>
+      <div class="necesidad-bar-track">
+        <div class="necesidad-bar-fill ${nivelClase}" style="width: ${valor}%"></div>
+      </div>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+// Identifica la necesidad más urgente (la más baja) — y si hay alguna < 35, posiciona Fluffy allí
+function necesidadMasUrgente() {
+  let minKey = null;
+  let minVal = 101;
+  Object.keys(state.necesidades).forEach(key => {
+    if (state.necesidades[key] < minVal) {
+      minVal = state.necesidades[key];
+      minKey = key;
+    }
+  });
+  if (minVal < 35) return { key: minKey, valor: minVal };
+  return null;
+}
+
+// Posiciona a Fluffy en la habitación de su necesidad más urgente
+function posicionarFluffy() {
+  const fluffyEl = document.getElementById("fluffy-casa");
+  if (!fluffyEl) return;
+  fluffyEl.innerHTML = MASCOTA_SVG[mascotPhase()];
+
+  // Limpiar indicadores anteriores
+  document.querySelectorAll(".habitacion.urgente").forEach(h => h.classList.remove("urgente"));
+  document.querySelectorAll(".necesidad-flotante").forEach(n => n.remove());
+
+  const urgente = necesidadMasUrgente();
+  if (urgente) {
+    const info = NECESIDADES_INFO[urgente.key];
+    const hab = document.querySelector(`.habitacion-${info.habitacion}`);
+    if (hab) {
+      hab.classList.add("urgente");
+      // Posicionar Fluffy encima de la habitación
+      const rect = hab.getBoundingClientRect();
+      const gridRect = document.getElementById("casa-grid").getBoundingClientRect();
+      const x = rect.left - gridRect.left + rect.width / 2 - 40;
+      const y = rect.top - gridRect.top + rect.height / 2 - 40;
+      fluffyEl.style.left = x + "px";
+      fluffyEl.style.top = y + "px";
+      fluffyEl.style.transform = "none";
+      // Indicador flotante sobre Fluffy
+      const ind = document.createElement("div");
+      ind.className = "necesidad-flotante";
+      ind.textContent = info.icono;
+      fluffyEl.appendChild(ind);
+    }
+  } else {
+    // Todas las necesidades OK: Fluffy al centro
+    fluffyEl.style.left = "50%";
+    fluffyEl.style.top = "50%";
+    fluffyEl.style.transform = "translate(-50%, -50%)";
+  }
+}
+
+function renderCasa() {
+  actualizarNecesidades();
+  renderNecesidadesBars();
+  // Nombre mascota en cabecera
+  const nombreEl = document.getElementById("casa-nombre");
+  if (nombreEl) nombreEl.textContent = "La casa de " + (state.mascotName || "Fluffy");
+  // Posicionar Fluffy (con timeout para asegurar que grid tiene tamaño)
+  setTimeout(posicionarFluffy, 50);
+  // Acceso directo a trofeos
+  const ac = document.getElementById("acceso-trofeos");
+  const acNum = document.getElementById("acceso-trofeos-num");
+  const disp = trofeosDisponibles();
+  if (ac && acNum) {
+    if (disp > 0) { ac.style.display = ""; acNum.textContent = disp; }
+    else { ac.style.display = "none"; }
+  }
+}
+
+function goCasa() {
+  goScreen("casa");
+  renderCasa();
+  updateMuteBtn();
+  playMusic();
+}
+
+// Cuando se toca una habitación, se lanza el ejercicio asociado como UN SOLO round
+// (no una sesión completa de 5-6 ejercicios)
+let modoCasaEjercicio = null; // { necesidad, ejercicio }
+
+function tocarHabitacion(necesidadKey) {
+  const info = NECESIDADES_INFO[necesidadKey];
+  if (!info) return;
+  stopMusic();
+  modoCasaEjercicio = {
+    necesidad: necesidadKey,
+    ejercicio: info.ejercicio
+  };
+  const ejerciciosLetras = ["dictado", "lexica", "comprension", "discrim", "omision"];
+  state.currentModule = ejerciciosLetras.includes(info.ejercicio) ? "letras" : "numeros";
+  sessionExercises = [info.ejercicio];
+  sessionIndex = 0;
+  sessionCorrect = 0;
+  sessionXpGained = 0;
+  renderProgressDots();
+  goScreen("session");
+  nextExercise();
 }
 
 /* ==========================================================================
@@ -2987,13 +3454,15 @@ function initOnboarding() {
   btn.onclick = () => {
     const val = input.value.trim() || "Fluffy";
     state.mascotName = val;
+    // Inicializar barras en 100 al empezar
+    state.necesidades = { hambre: 100, higiene: 100, energia: 100, juego: 100, aprender: 100 };
+    state.lastNecesidadesUpdate = Date.now();
     saveState();
-    // Melodía + voz de bienvenida personalizada
     try { getAudioCtx(); playMelodyWelcome(); } catch(e) {}
     setTimeout(() => {
       speak(`¡Hola! Tu perrito se llama ${val}. ¡A jugar!`);
     }, 800);
-    goHub();
+    goCasa();
   };
 }
 
@@ -3019,7 +3488,7 @@ function goScreen(name) {
   if (name === "home" || name === "end") updateMascotAll();
 }
 
-function goHome() { goHub(); }
+function goHome() { goCasa(); }
 function playAgain() { startSession(); }
 
 /* ==========================================================================
@@ -3061,18 +3530,23 @@ document.addEventListener("touchend", e => {
 // Arranque: si no hay mascotName, mostrar onboarding; si hay, ir directo a home
 function bootApp() {
   updateMascotAll();
+  // Inicializar timestamp de necesidades si es primera vez
+  if (!state.lastNecesidadesUpdate) {
+    state.lastNecesidadesUpdate = Date.now();
+    saveState();
+  }
   if (!state.mascotName || state.mascotName.length === 0) {
     initOnboarding();
     goScreen("onboard");
   } else {
-    goHub();
+    goCasa();
     const hubClickOnce = () => {
       playWelcomeSequence();
-      document.getElementById("screen-hub").removeEventListener("click", hubClickOnce, true);
+      document.getElementById("screen-casa").removeEventListener("click", hubClickOnce, true);
     };
     setTimeout(() => {
-      const hub = document.getElementById("screen-hub");
-      if (hub) hub.addEventListener("click", hubClickOnce, { capture: true, once: true });
+      const casa = document.getElementById("screen-casa");
+      if (casa) casa.addEventListener("click", hubClickOnce, { capture: true, once: true });
     }, 100);
   }
 }
