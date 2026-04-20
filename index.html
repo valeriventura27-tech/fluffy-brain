@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Fluffy">
-  <title>Fluffy — El juego de Valeria</title>
+  <meta name="apple-mobile-web-app-title" content="Fluffy Brain">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <title>Fluffy Brain — El juego de Valeria</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
@@ -842,31 +843,281 @@
       letter-spacing: 0.3em;
     }
 
-    /* ============ CASA DE FLUFFY ============ */
-    #screen-casa {
-      padding: 0;
-      background: linear-gradient(160deg, #FFE8D6 0%, #FFD4B8 50%, #FFC89C 100%);
-      display: flex;
-      flex-direction: column;
+    /* ============ INTRO FLUFFY BRAIN ============ */
+    #screen-intro {
+      background: radial-gradient(circle at 50% 35%, #FFE4B8 0%, #FFB89C 55%, #FF9B85 100%);
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      gap: 18px;
+      position: relative;
       overflow: hidden;
     }
 
-    .casa-header {
-      padding: 14px 16px 8px;
-      background: rgba(255, 255, 255, 0.5);
-      backdrop-filter: blur(8px);
-      flex-shrink: 0;
+    .intro-fluffy {
+      width: 220px;
+      height: 220px;
+      opacity: 0;
+      transform: translateY(-120vh) scale(0.6);
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+    }
+
+    .intro-fluffy.drop {
+      animation: introDrop 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes introDrop {
+      0%   { opacity: 0; transform: translateY(-120vh) scale(0.6); }
+      55%  { opacity: 1; transform: translateY(20px) scale(1.1); }
+      75%  { transform: translateY(-10px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .intro-fluffy.bounce {
+      animation: introBounce 1.4s ease-in-out infinite;
+    }
+
+    @keyframes introBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-14px) scale(1.03); }
+    }
+
+    .intro-logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 3px;
+      min-height: 90px;
+      flex-wrap: nowrap;
+      margin-top: 8px;
+    }
+
+    .intro-letter {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 3.8rem;
+      color: white;
+      text-shadow: 0 4px 0 rgba(199, 76, 20, 0.55), 0 8px 14px rgba(0,0,0,0.18);
+      letter-spacing: -0.01em;
+      opacity: 0;
+      transform: translateY(30px) scale(0.4);
+      display: inline-block;
+    }
+
+    .intro-letter.show {
+      animation: introLetter 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes introLetter {
+      0%   { opacity: 0; transform: translateY(30px) scale(0.4) rotate(-10deg); }
+      60%  { opacity: 1; transform: translateY(-10px) scale(1.18) rotate(3deg); }
+      100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    }
+
+    .intro-letter.color-1 { color: #FFF4E6; }
+    .intro-letter.color-2 { color: #FFE4B8; }
+    .intro-letter.color-3 { color: #FFD98E; }
+    .intro-letter.color-4 { color: white; }
+    .intro-letter.color-5 { color: #FFE4D1; }
+    .intro-letter.color-6 { color: #FFF0DE; }
+
+    .intro-space { width: 20px; display: inline-block; }
+
+    .intro-brain {
+      font-size: 3rem;
+      opacity: 0;
+      transform: scale(0);
+      margin-top: -4px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    }
+
+    .intro-brain.show {
+      animation: introBrain 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes introBrain {
+      0%   { opacity: 0; transform: scale(0) rotate(-45deg); }
+      70%  { opacity: 1; transform: scale(1.25) rotate(10deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    .intro-credit {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.95);
+      margin-top: 12px;
+      opacity: 0;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(199, 76, 20, 0.4);
+    }
+
+    .intro-credit.show {
+      animation: introCredit 0.7s ease forwards;
+    }
+
+    @keyframes introCredit {
+      0%   { opacity: 0; transform: translateY(12px); }
+      100% { opacity: 0.95; transform: translateY(0); }
+    }
+
+    .intro-skip {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--display);
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.65);
+      opacity: 0;
+      animation: introSkipHint 0.4s ease 1.8s forwards;
+      letter-spacing: 0.1em;
+    }
+
+    @keyframes introSkipHint {
+      0%   { opacity: 0; }
+      100% { opacity: 0.65; }
+    }
+
+    .intro-confetti {
+      position: fixed;
+      width: 9px;
+      height: 9px;
+      pointer-events: none;
       z-index: 5;
     }
 
-    .casa-nombre-mascota {
-      font-family: var(--display);
-      font-weight: 800;
+    /* ============ BOTÓN VOLVER A CASA UNIVERSAL ============ */
+    .back-home {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid rgba(255, 255, 255, 0.95);
       font-size: 1.4rem;
-      color: var(--ink);
-      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      z-index: 60;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s;
+    }
+
+    .back-home:active { transform: scale(0.92); }
+
+    /* ============ CASA DE FLUFFY ============ */
+    #screen-casa {
+      padding: 0;
+      background: linear-gradient(170deg, #FFE8D6 0%, #FFD4B8 40%, #FFC89C 100%);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .casa-nube {
+      position: absolute;
+      font-size: 2.6rem;
+      opacity: 0.55;
+      pointer-events: none;
+      z-index: 1;
+      filter: drop-shadow(0 2px 4px rgba(255,255,255,0.5));
+    }
+
+    .casa-nube-1 { top: 16%; left: -15%; animation: nubeFlota 28s linear infinite; }
+    .casa-nube-2 { top: 25%; right: -15%; animation: nubeFlota2 34s linear infinite; }
+    .casa-nube-3 { top: 8%; left: 45%; animation: nubeFlota3 26s ease-in-out infinite; }
+
+    @keyframes nubeFlota  { 0% { transform: translateX(0); } 100% { transform: translateX(120vw); } }
+    @keyframes nubeFlota2 { 0% { transform: translateX(0); } 100% { transform: translateX(-120vw); } }
+    @keyframes nubeFlota3 { 0%, 100% { transform: translateX(-30px); } 50% { transform: translateX(30px); } }
+
+    .casa-header {
+      padding: 10px 14px 8px;
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+      z-index: 5;
+      border-bottom: 3px solid rgba(255, 180, 140, 0.35);
+    }
+
+    .casa-top-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       margin-bottom: 8px;
     }
+
+    .casa-top-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #FFE8D6, #FFCE7A);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid white;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.15s;
+      overflow: hidden;
+    }
+
+    .casa-top-avatar:active { transform: scale(0.94); }
+    .casa-top-avatar svg { width: 100%; height: 100%; }
+
+    .casa-top-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .casa-top-nombre {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--ink);
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .casa-top-fase {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 0.78rem;
+      color: var(--soft-ink);
+      margin-top: 1px;
+    }
+
+    .casa-top-trofeo {
+      background: linear-gradient(145deg, #FFE4B8, #FFCE7A);
+      border: 3px solid white;
+      border-radius: 22px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #9C6A1C;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+      transition: transform 0.15s;
+      flex-shrink: 0;
+    }
+
+    .casa-top-trofeo:active { transform: scale(0.94); }
+    .casa-top-trofeo.oculto { display: none; }
 
     .necesidades-bars {
       display: flex;
@@ -876,10 +1127,11 @@
 
     .necesidad-bar {
       flex: 1;
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 12px;
-      padding: 6px 4px 4px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 14px;
+      padding: 5px 4px 4px;
       text-align: center;
+      box-shadow: 0 2px 4px rgba(74, 63, 85, 0.06);
     }
 
     .necesidad-icono {
@@ -889,150 +1141,320 @@
     }
 
     .necesidad-bar-track {
-      height: 6px;
+      height: 7px;
       background: rgba(74, 63, 85, 0.12);
-      border-radius: 3px;
+      border-radius: 4px;
       overflow: hidden;
     }
 
     .necesidad-bar-fill {
       height: 100%;
-      border-radius: 3px;
+      border-radius: 4px;
       transition: width 0.4s ease, background 0.3s ease;
     }
 
-    .necesidad-bar-fill.alto { background: linear-gradient(90deg, var(--mint), #6BC88A); }
+    .necesidad-bar-fill.alto  { background: linear-gradient(90deg, var(--mint), #6BC88A); }
     .necesidad-bar-fill.medio { background: linear-gradient(90deg, var(--sun), #E8B85C); }
-    .necesidad-bar-fill.bajo { background: linear-gradient(90deg, var(--coral), #D97B68); }
+    .necesidad-bar-fill.bajo  { background: linear-gradient(90deg, var(--coral), #D97B68); }
 
     .casa-grid {
       flex: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr auto;
+      grid-template-rows: 1fr 1fr 1fr;
       grid-template-areas:
         "cocina dormitorio"
         "bano estudio"
-        "jardin jardin";
-      gap: 8px;
-      padding: 10px;
+        "jardin escuela";
+      gap: 10px;
+      padding: 12px;
       min-height: 0;
+      z-index: 2;
+      position: relative;
     }
 
     .habitacion {
       position: relative;
-      border-radius: 20px;
+      border-radius: 22px;
       cursor: pointer;
       overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       transition: transform 0.15s ease, box-shadow 0.2s ease;
-      box-shadow: var(--shadow-soft);
-      border: 3px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 6px 16px rgba(74, 63, 85, 0.15), inset 0 -4px 0 rgba(0, 0, 0, 0.08);
+      border: 4px solid rgba(255, 255, 255, 0.85);
     }
 
-    .habitacion:active { transform: scale(0.97); }
+    .habitacion:active { transform: scale(0.96); }
 
     .habitacion.urgente {
-      animation: urgente-pulse 1.2s ease infinite;
+      animation: urgente-pulse 1.3s ease infinite;
     }
 
     @keyframes urgente-pulse {
-      0%, 100% { box-shadow: var(--shadow-soft); }
-      50% { box-shadow: 0 0 0 4px rgba(255, 155, 133, 0.5), var(--shadow-soft); }
+      0%, 100% { box-shadow: 0 6px 16px rgba(74, 63, 85, 0.15), inset 0 -4px 0 rgba(0, 0, 0, 0.08); }
+      50%      { box-shadow: 0 0 0 5px rgba(255, 155, 133, 0.55), 0 6px 20px rgba(255, 100, 80, 0.4), inset 0 -4px 0 rgba(0, 0, 0, 0.08); }
     }
 
-    .habitacion-cocina   { grid-area: cocina;     background: linear-gradient(155deg, #FFE8B8, #FFCE7A); }
-    .habitacion-dormitorio { grid-area: dormitorio; background: linear-gradient(155deg, #D8C9E8, #B8A6D9); }
-    .habitacion-bano     { grid-area: bano;       background: linear-gradient(155deg, #C8E4F5, #A0C8E0); }
-    .habitacion-estudio  { grid-area: estudio;    background: linear-gradient(155deg, #E8D8C4, #C8A888); }
-    .habitacion-jardin   { grid-area: jardin;     background: linear-gradient(155deg, #D4F0C8, #A8D894); min-height: 120px; }
+    .habitacion-cocina    { grid-area: cocina;     background: linear-gradient(155deg, #FFEEB8, #FFCC66); }
+    .habitacion-dormitorio{ grid-area: dormitorio; background: linear-gradient(155deg, #D8C4F0, #A88ECE); }
+    .habitacion-bano      { grid-area: bano;       background: linear-gradient(155deg, #BCE0F5, #7EB8D9); }
+    .habitacion-estudio   { grid-area: estudio;    background: linear-gradient(155deg, #F5D4AE, #D9A878); }
+    .habitacion-jardin    { grid-area: jardin;     background: linear-gradient(155deg, #BFE8A8, #82C467); }
+    .habitacion-escuela   { grid-area: escuela;    background: linear-gradient(155deg, #FFC8D4, #E88A9C); }
 
     .habitacion-label {
       position: absolute;
       top: 8px;
       left: 10px;
       font-family: var(--display);
-      font-weight: 700;
+      font-weight: 800;
       font-size: 0.85rem;
-      color: rgba(74, 63, 85, 0.85);
-      background: rgba(255, 255, 255, 0.85);
-      padding: 2px 10px;
-      border-radius: 10px;
-      z-index: 2;
+      color: rgba(74, 63, 85, 0.95);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 3px 12px;
+      border-radius: 12px;
+      z-index: 4;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    .habitacion-icono {
-      font-size: 3rem;
-      opacity: 0.5;
-      filter: saturate(0.8);
-    }
-
-    .habitacion-decor {
+    /* Ilustración de habitación (imagen o fallback) */
+    .habitacion-ilustracion {
       position: absolute;
-      opacity: 0.6;
+      inset: 0;
       pointer-events: none;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: inherit;
     }
 
-    /* Fluffy posicionado en la habitación activa */
+    .habitacion-ilustracion img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+    }
+
+    .habitacion-icono-fallback {
+      font-size: 3.5rem;
+      opacity: 0.65;
+      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.12));
+    }
+
+    /* Fluffy en casa */
     .fluffy-en-casa {
       position: absolute;
-      width: 80px;
-      height: 80px;
-      transition: all 0.5s ease;
-      z-index: 3;
-      pointer-events: none;
+      width: 90px;
+      height: 90px;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 10;
+      cursor: pointer;
+      filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.15));
     }
 
     .fluffy-en-casa svg { width: 100%; height: 100%; animation: float 3s ease-in-out infinite; }
 
-    /* Indicador de necesidad flotando sobre Fluffy */
     .necesidad-flotante {
       position: absolute;
-      font-size: 1.8rem;
-      top: -24px;
+      font-size: 1.9rem;
+      top: -28px;
       left: 50%;
       transform: translateX(-50%);
       animation: bounce-urgente 0.8s ease infinite;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.25));
+      z-index: 11;
     }
 
     @keyframes bounce-urgente {
       0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(-8px); }
+      50%      { transform: translateX(-50%) translateY(-10px); }
     }
 
-    /* Accesos secundarios a letras/números */
-    .casa-accesos {
+    /* ============ PANTALLA ESCUELA ============ */
+    #screen-escuela {
+      background: linear-gradient(170deg, #FFC8D4 0%, #FFB0BE 100%);
+      padding: 70px 20px 30px;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .escuela-titulo {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 2.1rem;
+      color: white;
+      text-align: center;
+      text-shadow: 0 3px 0 rgba(199, 76, 120, 0.5), 0 4px 10px rgba(0,0,0,0.15);
+      margin-top: 10px;
+    }
+
+    .escuela-subtitulo {
+      color: white;
+      text-align: center;
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      opacity: 0.9;
+    }
+
+    /* ============ PANTALLA PERFIL MASCOTA ============ */
+    #screen-perfil {
+      background: linear-gradient(170deg, #FFE8D6 0%, #FFD4B8 100%);
+      padding: 70px 20px 30px;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .perfil-card {
+      background: white;
+      border-radius: 28px;
+      padding: 24px 22px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      text-align: center;
+    }
+
+    .perfil-avatar {
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 10px;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,0.15));
+    }
+
+    .perfil-avatar svg {
+      width: 100%;
+      height: 100%;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .perfil-nombre {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 2rem;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .perfil-fase {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--coral);
+      margin-bottom: 18px;
+    }
+
+    .perfil-xp-row {
+      background: #FFF4E8;
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+    }
+
+    .perfil-xp-label {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--soft-ink);
       display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .perfil-xp-label strong { color: var(--coral); }
+
+    .perfil-xp-track {
+      height: 12px;
+      background: rgba(74, 63, 85, 0.12);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .perfil-xp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--peach), var(--coral));
+      border-radius: 6px;
+      transition: width 0.6s ease;
+    }
+
+    .perfil-necesidades {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .perfil-necesidad-row {
+      display: flex;
+      align-items: center;
       gap: 10px;
-      padding: 0 10px 12px;
+    }
+
+    .perfil-necesidad-icono {
+      font-size: 1.4rem;
+      width: 32px;
+      text-align: center;
       flex-shrink: 0;
     }
 
-    .acceso-directo {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 16px;
-      padding: 10px 12px;
-      border: none;
+    .perfil-necesidad-nombre {
       font-family: var(--display);
       font-weight: 700;
-      font-size: 0.95rem;
       color: var(--ink);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: var(--shadow-button);
-      transition: transform 0.15s;
+      width: 85px;
+      flex-shrink: 0;
+      font-size: 0.95rem;
+      text-align: left;
     }
 
-    .acceso-directo:active { transform: translateY(2px); }
+    .perfil-necesidad-track {
+      flex: 1;
+      height: 10px;
+      background: rgba(74, 63, 85, 0.12);
+      border-radius: 5px;
+      overflow: hidden;
+    }
 
-    /* ============ HUB (selección módulo) - AHORA SOLO PARA ACCESO DIRECTO ============ */
+    .perfil-necesidad-fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.4s ease, background 0.3s ease;
+    }
+
+    .perfil-necesidad-fill.alto  { background: linear-gradient(90deg, var(--mint), #6BC88A); }
+    .perfil-necesidad-fill.medio { background: linear-gradient(90deg, var(--sun), #E8B85C); }
+    .perfil-necesidad-fill.bajo  { background: linear-gradient(90deg, var(--coral), #D97B68); }
+
+    .perfil-stats {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px dashed rgba(74, 63, 85, 0.15);
+    }
+
+    .perfil-stat {
+      text-align: center;
+    }
+
+    .perfil-stat-num {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 1.6rem;
+      color: var(--coral);
+    }
+
+    .perfil-stat-label {
+      font-size: 0.72rem;
+      color: var(--soft-ink);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+
+    /* ============ HUB (ya no es la pantalla principal, solo legacy) ============ */
     #screen-hub {
       align-items: center;
       justify-content: center;
@@ -1312,6 +1734,17 @@
 
 <div id="app">
 
+  <!-- INTRO SCREEN (FLUFFY BRAIN) -->
+  <div id="screen-intro" class="screen active" onclick="skipIntro()">
+    <div class="intro-fluffy" id="intro-fluffy"></div>
+    <div class="intro-logo" id="intro-logo"></div>
+    <div class="intro-brain" id="intro-brain">🧠</div>
+    <div class="intro-credit" id="intro-credit">by Valeria Ventura</div>
+    <div class="intro-skip">toca para saltar</div>
+  </div>
+
+  <!-- OVERLAY DE CUIDADO (se usa sobre cualquier pantalla) -->
+
   <!-- OVERLAY DE CUIDADO (animación tras ejercicio exitoso) -->
   <div class="cuidado-overlay" id="cuidado-overlay">
     <div class="cuidado-escena">
@@ -1362,37 +1795,114 @@
 
   <!-- PANTALLA CASA DE FLUFFY -->
   <div id="screen-casa" class="screen">
+    <!-- Nubes decorativas flotando -->
+    <div class="casa-nube casa-nube-1">☁️</div>
+    <div class="casa-nube casa-nube-2">☁️</div>
+    <div class="casa-nube casa-nube-3">☁️</div>
+
     <div class="casa-header">
-      <div class="casa-nombre-mascota" id="casa-nombre">La casa de Fluffy</div>
+      <div class="casa-top-row">
+        <button class="casa-top-avatar" id="casa-top-avatar" onclick="goPerfil()" aria-label="Perfil de la mascota"></button>
+        <div class="casa-top-info">
+          <div class="casa-top-nombre" id="casa-top-nombre">Fluffy</div>
+          <div class="casa-top-fase" id="casa-top-fase">Cachorrito</div>
+        </div>
+        <button class="casa-top-trofeo oculto" id="casa-top-trofeo" onclick="goCanje()">
+          <span>🏆</span><span id="casa-top-trofeo-num">0</span>
+        </button>
+      </div>
       <div class="necesidades-bars" id="necesidades-bars"></div>
     </div>
+
     <div class="casa-grid" id="casa-grid">
       <div class="habitacion habitacion-cocina" data-necesidad="hambre" onclick="tocarHabitacion('hambre')">
         <div class="habitacion-label">Cocina</div>
-        <div class="habitacion-icono">🍲</div>
+        <div class="habitacion-ilustracion">
+          <img src="img/habitaciones/cocina.png" alt="" onerror="handleImgError(this, '🍲')">
+        </div>
       </div>
       <div class="habitacion habitacion-dormitorio" data-necesidad="energia" onclick="tocarHabitacion('energia')">
         <div class="habitacion-label">Cama</div>
-        <div class="habitacion-icono">🛏️</div>
+        <div class="habitacion-ilustracion">
+          <img src="img/habitaciones/cama.png" alt="" onerror="handleImgError(this, '🛏️')">
+        </div>
       </div>
       <div class="habitacion habitacion-bano" data-necesidad="higiene" onclick="tocarHabitacion('higiene')">
         <div class="habitacion-label">Baño</div>
-        <div class="habitacion-icono">🛁</div>
+        <div class="habitacion-ilustracion">
+          <img src="img/habitaciones/bano.png" alt="" onerror="handleImgError(this, '🛁')">
+        </div>
       </div>
       <div class="habitacion habitacion-estudio" data-necesidad="aprender" onclick="tocarHabitacion('aprender')">
         <div class="habitacion-label">Estudio</div>
-        <div class="habitacion-icono">📚</div>
+        <div class="habitacion-ilustracion">
+          <img src="img/habitaciones/estudio.png" alt="" onerror="handleImgError(this, '📚')">
+        </div>
       </div>
       <div class="habitacion habitacion-jardin" data-necesidad="juego" onclick="tocarHabitacion('juego')">
         <div class="habitacion-label">Jardín</div>
-        <div class="habitacion-icono">🎾</div>
+        <div class="habitacion-ilustracion">
+          <img src="img/habitaciones/jardin.png" alt="" onerror="handleImgError(this, '🎾')">
+        </div>
+      </div>
+      <div class="habitacion habitacion-escuela" onclick="goEscuela()">
+        <div class="habitacion-label">Escuela</div>
+        <div class="habitacion-ilustracion">
+          <img src="img/habitaciones/escuela.png" alt="" onerror="handleImgError(this, '🎒')">
+        </div>
       </div>
       <div class="fluffy-en-casa" id="fluffy-casa" style="left: 50%; top: 50%; transform: translate(-50%, -50%);"></div>
     </div>
-    <div class="casa-accesos">
-      <button class="acceso-directo" onclick="enterModule('letras')">📖 Letras</button>
-      <button class="acceso-directo" onclick="enterModule('numeros')">🔢 Números</button>
-      <button class="acceso-directo" id="acceso-trofeos" onclick="goCanje()" style="display:none;">🏆 <span id="acceso-trofeos-num">0</span></button>
+  </div>
+
+  <!-- PANTALLA ESCUELA (selección Letras/Números) -->
+  <div id="screen-escuela" class="screen">
+    <button class="back-home" onclick="goCasa()" aria-label="Volver a casa">🏠</button>
+    <div class="escuela-titulo">Escuela de Fluffy</div>
+    <div class="escuela-subtitulo">¿Qué clase quieres hoy?</div>
+    <div class="hub-buttons" style="max-width:420px;width:100%;">
+      <button class="hub-btn hub-btn-letras" onclick="enterModule('letras')">
+        <div class="hub-btn-icon">📖</div>
+        <div class="hub-btn-label">Clase de letras<small>Leer y escribir con Fluffy</small></div>
+      </button>
+      <button class="hub-btn hub-btn-numeros" onclick="enterModule('numeros')">
+        <div class="hub-btn-icon">🔢</div>
+        <div class="hub-btn-label">Clase de números<small>Contar con Fluffy</small></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- PANTALLA PERFIL MASCOTA -->
+  <div id="screen-perfil" class="screen">
+    <button class="back-home" onclick="goCasa()" aria-label="Volver a casa">🏠</button>
+    <div class="perfil-card">
+      <div class="perfil-avatar" id="perfil-avatar"></div>
+      <div class="perfil-nombre" id="perfil-nombre">Fluffy</div>
+      <div class="perfil-fase" id="perfil-fase">Cachorrito</div>
+      <div class="perfil-xp-row">
+        <div class="perfil-xp-label">
+          <span>Experiencia</span>
+          <span><strong id="perfil-xp-actual">0</strong> / <span id="perfil-xp-target">30</span></span>
+        </div>
+        <div class="perfil-xp-track">
+          <div class="perfil-xp-fill" id="perfil-xp-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="perfil-necesidades" id="perfil-necesidades"></div>
+      <div class="perfil-stats">
+        <div class="perfil-stat">
+          <div class="perfil-stat-num" id="perfil-stat-cuidados">0</div>
+          <div class="perfil-stat-label">Cuidados</div>
+        </div>
+        <div class="perfil-stat">
+          <div class="perfil-stat-num" id="perfil-stat-dias">0</div>
+          <div class="perfil-stat-label">Sesiones</div>
+        </div>
+        <div class="perfil-stat">
+          <div class="perfil-stat-num" id="perfil-stat-trofeos">0</div>
+          <div class="perfil-stat-label">Trofeos</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1406,6 +1916,7 @@
 
   <!-- PANTALLA CANJE -->
   <div id="screen-canje" class="screen">
+    <button class="back-home" onclick="goCasa()" aria-label="Volver a casa">🏠</button>
     <div class="canje-card">
       <div style="font-size:4rem;">🏆</div>
       <h2 style="margin:12px 0;">Mis trofeos</h2>
@@ -1419,13 +1930,12 @@
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px;align-items:center;margin-top:20px;">
-      <button class="btn btn-secondary" onclick="goHub()" style="font-size:1.1rem;">Volver</button>
-      <button onclick="showCanjePin()" id="btn-show-pin" style="background:none;border:none;color:var(--soft-ink);font-size:0.85rem;margin-top:12px;text-decoration:underline;cursor:pointer;">Canjear (solo adultos)</button>
+      <button onclick="showCanjePin()" id="btn-show-pin" style="background:none;border:none;color:var(--soft-ink);font-size:0.85rem;margin-top:4px;text-decoration:underline;cursor:pointer;">Canjear (solo adultos)</button>
     </div>
   </div>
 
   <!-- HOME SCREEN (ya no se usa en el flujo normal pero mantenemos la estructura) -->
-  <div id="screen-home" class="screen active">
+  <div id="screen-home" class="screen">
     <div class="mascot-container" id="mascot-home"></div>
     <div class="mascot-name" id="mascot-name">Tu amiguito</div>
     <div class="greeting">¡Hola, <strong id="greeting-name">Valeria</strong>!</div>
@@ -1435,6 +1945,7 @@
 
   <!-- SESSION SCREEN -->
   <div id="screen-session" class="screen">
+    <button class="back-home" onclick="abandonSessionToCasa()" aria-label="Volver a casa">🏠</button>
     <div class="session-header">
       <div class="session-progress" id="progress-dots"></div>
       <div class="mini-mascot" id="mascot-mini"></div>
@@ -1850,6 +2361,12 @@ function mascotPhase() {
   return 0;
 }
 
+// Nombre humano de la fase de crecimiento
+const MASCOT_PHASE_NAMES = ["Cachorrito", "Pequeñín", "Joven", "Adulto", "Papá/Mamá", "Sabio"];
+function mascotPhaseName() {
+  return MASCOT_PHASE_NAMES[mascotPhase()] || "Cachorrito";
+}
+
 function mascotNextMilestone() {
   const xp = state.xp;
   for (let i = 0; i < XP_THRESHOLDS.length; i++) {
@@ -2021,6 +2538,18 @@ function playMelodyWelcome() {
     { f: 1046.5, t: 0.42, d: 0.30 }
   ];
   notes.forEach(n => playNote(n.f, n.t, n.d));
+}
+
+// Firma sonora FLUFFY BRAIN — 5 notas reconocibles
+function playMelodyIntro() {
+  const notes = [
+    { f: 523.25, t: 0.00, d: 0.20, v: 0.20 }, // C5
+    { f: 698.46, t: 0.18, d: 0.20, v: 0.20 }, // F5
+    { f: 880.00, t: 0.36, d: 0.24, v: 0.22 }, // A5
+    { f: 783.99, t: 0.62, d: 0.20, v: 0.20 }, // G5
+    { f: 1046.5, t: 0.82, d: 0.48, v: 0.24 }  // C6
+  ];
+  notes.forEach(n => playNote(n.f, n.t, n.d, n.v));
 }
 
 function playMelodySuccess() {
@@ -2932,19 +3461,23 @@ function posicionarFluffy() {
 function renderCasa() {
   actualizarNecesidades();
   renderNecesidadesBars();
-  // Nombre mascota en cabecera
-  const nombreEl = document.getElementById("casa-nombre");
-  if (nombreEl) nombreEl.textContent = "La casa de " + (state.mascotName || "Fluffy");
+  // Nuevo header: avatar, nombre, fase, trofeo
+  const avatarEl = document.getElementById("casa-top-avatar");
+  if (avatarEl) avatarEl.innerHTML = MASCOTA_SVG[mascotPhase()];
+  const nombreEl = document.getElementById("casa-top-nombre");
+  if (nombreEl) nombreEl.textContent = state.mascotName || "Fluffy";
+  const faseEl = document.getElementById("casa-top-fase");
+  if (faseEl) faseEl.textContent = mascotPhaseName();
+  // Trofeos disponibles en la esquina superior derecha
+  const trofEl = document.getElementById("casa-top-trofeo");
+  const trofNumEl = document.getElementById("casa-top-trofeo-num");
+  const disp = trofeosDisponibles();
+  if (trofEl && trofNumEl) {
+    if (disp > 0) { trofEl.classList.remove("oculto"); trofNumEl.textContent = disp; }
+    else { trofEl.classList.add("oculto"); }
+  }
   // Posicionar Fluffy (con timeout para asegurar que grid tiene tamaño)
   setTimeout(posicionarFluffy, 50);
-  // Acceso directo a trofeos
-  const ac = document.getElementById("acceso-trofeos");
-  const acNum = document.getElementById("acceso-trofeos-num");
-  const disp = trofeosDisponibles();
-  if (ac && acNum) {
-    if (disp > 0) { ac.style.display = ""; acNum.textContent = disp; }
-    else { ac.style.display = "none"; }
-  }
 }
 
 function goCasa() {
@@ -2975,6 +3508,113 @@ function tocarHabitacion(necesidadKey) {
   renderProgressDots();
   goScreen("session");
   nextExercise();
+}
+
+// Handler para imágenes que no cargan: reemplaza por emoji fallback
+function handleImgError(img, emoji) {
+  const parent = img.parentElement;
+  if (!parent) return;
+  img.style.display = "none";
+  // Evitar duplicar el fallback si el error se dispara varias veces
+  if (parent.querySelector(".habitacion-icono-fallback")) return;
+  const fb = document.createElement("div");
+  fb.className = "habitacion-icono-fallback";
+  fb.textContent = emoji;
+  parent.appendChild(fb);
+}
+
+/* ==========================================================================
+   PANTALLA ESCUELA (sesiones dirigidas)
+   ========================================================================== */
+
+function goEscuela() {
+  stopMusic();
+  goScreen("escuela");
+}
+
+/* ==========================================================================
+   PANTALLA PERFIL MASCOTA
+   ========================================================================== */
+
+function goPerfil() {
+  renderPerfil();
+  goScreen("perfil");
+}
+
+function renderPerfil() {
+  actualizarNecesidades();
+  const mascot = state.mascotName || "Fluffy";
+  const avatarEl = document.getElementById("perfil-avatar");
+  if (avatarEl) avatarEl.innerHTML = MASCOTA_SVG[mascotPhase()];
+  const nombreEl = document.getElementById("perfil-nombre");
+  if (nombreEl) nombreEl.textContent = mascot;
+  const faseEl = document.getElementById("perfil-fase");
+  if (faseEl) faseEl.textContent = mascotPhaseName();
+
+  // XP: progreso dentro del segmento actual
+  const phase = mascotPhase();
+  const thisTh = XP_THRESHOLDS[phase];
+  const nextTh = XP_THRESHOLDS[phase + 1];
+  const xpActualEl = document.getElementById("perfil-xp-actual");
+  const xpTargetEl = document.getElementById("perfil-xp-target");
+  const xpFillEl = document.getElementById("perfil-xp-fill");
+  if (xpActualEl && xpTargetEl && xpFillEl) {
+    if (nextTh != null) {
+      const segActual = state.xp - thisTh;
+      const segTotal = nextTh - thisTh;
+      xpActualEl.textContent = segActual;
+      xpTargetEl.textContent = segTotal;
+      xpFillEl.style.width = Math.min(100, (segActual / segTotal) * 100) + "%";
+    } else {
+      // Fase máxima: mostrar completo
+      xpActualEl.textContent = state.xp;
+      xpTargetEl.textContent = "MAX";
+      xpFillEl.style.width = "100%";
+    }
+  }
+
+  // Necesidades detalladas
+  const necesidadesEl = document.getElementById("perfil-necesidades");
+  if (necesidadesEl) {
+    necesidadesEl.innerHTML = "";
+    Object.keys(NECESIDADES_INFO).forEach(key => {
+      const info = NECESIDADES_INFO[key];
+      const valor = Math.round(state.necesidades[key] || 0);
+      let nivelClase = "alto";
+      if (valor < 35) nivelClase = "bajo";
+      else if (valor < 65) nivelClase = "medio";
+      const row = document.createElement("div");
+      row.className = "perfil-necesidad-row";
+      row.innerHTML = `
+        <div class="perfil-necesidad-icono">${info.icono}</div>
+        <div class="perfil-necesidad-nombre">${info.nombre}</div>
+        <div class="perfil-necesidad-track">
+          <div class="perfil-necesidad-fill ${nivelClase}" style="width:${valor}%"></div>
+        </div>
+      `;
+      necesidadesEl.appendChild(row);
+    });
+  }
+
+  // Stats
+  const statCuidados = document.getElementById("perfil-stat-cuidados");
+  if (statCuidados) statCuidados.textContent = state.cuidadosHoy || 0;
+  const statDias = document.getElementById("perfil-stat-dias");
+  if (statDias) statDias.textContent = state.totalSessions || 0;
+  const statTrofeos = document.getElementById("perfil-stat-trofeos");
+  if (statTrofeos) statTrofeos.textContent = (state.trofeosGanados || 0);
+}
+
+/* ==========================================================================
+   ABANDONAR SESIÓN (botón casita durante ejercicios)
+   ========================================================================== */
+
+function abandonSessionToCasa() {
+  // Cancelar sesión actual sin penalizar
+  modoCasaEjercicio = null;
+  sessionExercises = [];
+  sessionIndex = 0;
+  goCasa();
 }
 
 /* ==========================================================================
@@ -3766,27 +4406,132 @@ document.addEventListener("touchend", e => {
 }, { passive: false });
 
 // Arranque: si no hay mascotName, mostrar onboarding; si hay, ir directo a home
-function bootApp() {
-  updateMascotAll();
-  // Inicializar timestamp de necesidades si es primera vez
-  if (!state.lastNecesidadesUpdate) {
-    state.lastNecesidadesUpdate = Date.now();
-    saveState();
+/* ==========================================================================
+   INTRO FLUFFY BRAIN
+   ========================================================================== */
+
+let introTimers = [];
+let introDestino = "casa";
+let introPlaying = false;
+
+function playIntro(destino) {
+  introDestino = destino || "casa";
+  introPlaying = true;
+
+  const fluffyEl = document.getElementById("intro-fluffy");
+  if (fluffyEl) {
+    fluffyEl.innerHTML = MASCOTA_SVG[mascotPhase()];
+    fluffyEl.classList.remove("drop", "bounce");
   }
-  if (!state.mascotName || state.mascotName.length === 0) {
+
+  const logoEl = document.getElementById("intro-logo");
+  if (logoEl) {
+    logoEl.innerHTML = "";
+    const palabras = ["FLUFFY", "BRAIN"];
+    let colorIdx = 0;
+    palabras.forEach((pal, wi) => {
+      for (let i = 0; i < pal.length; i++) {
+        const span = document.createElement("span");
+        span.className = "intro-letter color-" + ((colorIdx % 6) + 1);
+        span.textContent = pal[i];
+        logoEl.appendChild(span);
+        colorIdx++;
+      }
+      if (wi === 0) {
+        const space = document.createElement("span");
+        space.className = "intro-space";
+        logoEl.appendChild(space);
+      }
+    });
+  }
+
+  const brainEl = document.getElementById("intro-brain");
+  if (brainEl) brainEl.classList.remove("show");
+  const creditEl = document.getElementById("intro-credit");
+  if (creditEl) creditEl.classList.remove("show");
+
+  goScreen("intro");
+
+  introTimers.forEach(t => clearTimeout(t));
+  introTimers = [];
+
+  introTimers.push(setTimeout(() => {
+    if (fluffyEl) fluffyEl.classList.add("drop");
+    try { getAudioCtx(); playMelodyIntro(); } catch(e) {}
+  }, 300));
+
+  introTimers.push(setTimeout(() => {
+    if (fluffyEl) { fluffyEl.classList.remove("drop"); fluffyEl.classList.add("bounce"); }
+  }, 1050));
+
+  const letras = logoEl ? logoEl.querySelectorAll(".intro-letter") : [];
+  letras.forEach((l, i) => {
+    introTimers.push(setTimeout(() => { l.classList.add("show"); }, 1050 + i * 85));
+  });
+
+  const tBrain = 1050 + letras.length * 85 + 120;
+  introTimers.push(setTimeout(() => {
+    if (brainEl) brainEl.classList.add("show");
+  }, tBrain));
+
+  introTimers.push(setTimeout(() => {
+    if (creditEl) creditEl.classList.add("show");
+  }, tBrain + 400));
+
+  introTimers.push(setTimeout(() => {
+    launchIntroConfetti();
+  }, tBrain + 100));
+
+  introTimers.push(setTimeout(() => {
+    goAfterIntro();
+  }, tBrain + 1400));
+}
+
+function launchIntroConfetti() {
+  const colors = ["#FFE4B8", "#FFD98E", "#FFF4E6", "#FFCE7A", "#FFF0DE", "#FFB89C"];
+  for (let i = 0; i < 24; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti intro-confetti";
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.left = (5 + Math.random() * 90) + "%";
+    c.style.top = "-20px";
+    c.style.animationDelay = (Math.random() * 0.8) + "s";
+    c.style.borderRadius = Math.random() < 0.5 ? "50%" : "2px";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3500);
+  }
+}
+
+function skipIntro() {
+  if (!introPlaying) return;
+  introTimers.forEach(t => clearTimeout(t));
+  introTimers = [];
+  try { getAudioCtx(); } catch(e){}
+  goAfterIntro();
+}
+
+function goAfterIntro() {
+  introPlaying = false;
+  if (introDestino === "onboard") {
     initOnboarding();
     goScreen("onboard");
   } else {
     goCasa();
-    const hubClickOnce = () => {
-      playWelcomeSequence();
-      document.getElementById("screen-casa").removeEventListener("click", hubClickOnce, true);
-    };
-    setTimeout(() => {
-      const casa = document.getElementById("screen-casa");
-      if (casa) casa.addEventListener("click", hubClickOnce, { capture: true, once: true });
-    }, 100);
   }
+}
+
+/* ==========================================================================
+   BOOT
+   ========================================================================== */
+
+function bootApp() {
+  updateMascotAll();
+  if (!state.lastNecesidadesUpdate) {
+    state.lastNecesidadesUpdate = Date.now();
+    saveState();
+  }
+  const destino = (!state.mascotName || state.mascotName.length === 0) ? "onboard" : "casa";
+  playIntro(destino);
 }
 
 bootApp();
