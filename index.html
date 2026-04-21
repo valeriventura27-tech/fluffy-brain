@@ -1013,14 +1013,15 @@
     .back-home:active { transform: scale(0.92); }
 
     /* ============ CASA DE FLUFFY ============ */
-    #screen-casa {
-      padding: 0;
-      background: linear-gradient(170deg, #FFE8D6 0%, #FFD4B8 40%, #FFC89C 100%);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      position: relative;
-    }
+#screen-casa {
+  padding: 0;
+  background: linear-gradient(170deg, #FFE8D6 0%, #FFD4B8 40%, #FFC89C 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: absolute;
+  inset: 0;
+}
 
     .casa-nube {
       position: absolute;
@@ -1158,7 +1159,8 @@
     .necesidad-bar-fill.bajo  { background: linear-gradient(90deg, var(--coral), #D97B68); }
 
     .casa-grid {
-      flex: 1;
+      flex: 1 1 auto;
+      min-height: 0;
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr 1fr;
@@ -1168,13 +1170,12 @@
         "jardin escuela";
       gap: 10px;
       padding: 12px;
-      min-height: 560px;
       z-index: 2;
       position: relative;
-      /* En pantallas muy anchas, limitamos ancho y centramos */
       max-width: 780px;
       margin: 0 auto;
       width: 100%;
+      box-sizing: border-box;
     }
 
     .habitacion {
@@ -1185,31 +1186,27 @@
       transition: transform 0.15s ease, box-shadow 0.2s ease;
       box-shadow: 0 6px 16px rgba(74, 63, 85, 0.15), inset 0 -4px 0 rgba(0, 0, 0, 0.08);
       border: 4px solid rgba(255, 255, 255, 0.85);
-      min-height: 130px;
+      min-height: 0;
     }
 
-    /* En tablets/móviles en landscape o pantallas horizontales */
-    @media (orientation: landscape) and (max-height: 600px) {
+    /* Landscape (iPad horizontal): grid más ancho */
+    @media (orientation: landscape) {
       .casa-grid {
-        min-height: 0;
-        max-width: 600px;
-        grid-template-rows: minmax(120px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr);
+        max-width: 900px;
+        gap: 8px;
+        padding: 8px;
       }
-      .habitacion { min-height: 100px; }
     }
 
-    /* En móvil pequeño vertical */
+    /* Móvil pequeño vertical */
     @media (max-width: 480px) {
       .casa-grid {
         gap: 8px;
         padding: 8px;
-        min-height: 480px;
       }
-      .habitacion { min-height: 110px; }
     }
 
     .habitacion:active { transform: scale(0.96); }
-
     .habitacion.urgente {
       animation: urgente-pulse 1.3s ease infinite;
     }
