@@ -7421,6 +7421,217 @@ function renderSuma() {
 }
 
 /* ==========================================================================
+   === FLUFFY BRAIN — CAMBIOS COLE ===
+   MÓDULO COLE (Inglés, Mates, Castellano, Català, Medi)
+   ========================================================================== */
+
+// Estado del modo cole — null = no estamos en cole, string = asignatura activa
+let modoColeAsignatura = null;
+let coleSessionItems = []; // los 6 items elegidos para esta sesión
+
+// Helper: TTS con idioma específico (para listening en inglés)
+function speakLang(text, lang, onEnd) {
+  try {
+    if (!("speechSynthesis" in window)) { if (onEnd) onEnd(); return; }
+    if (currentUtterance) speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || "es-ES";
+    u.rate = 0.85;
+    u.pitch = 1.0;
+    // Buscar voz del idioma solicitado
+    try {
+      const voices = speechSynthesis.getVoices();
+      const targetLang = (lang || "es-ES").toLowerCase().split("-")[0];
+      let v = voices.find(x => (x.lang || "").toLowerCase().startsWith(targetLang));
+      if (v) u.voice = v;
+    } catch(e){}
+    if (onEnd) u.onend = onEnd;
+    currentUtterance = u;
+    if (speechSynthesis.paused) speechSynthesis.resume();
+    speechSynthesis.speak(u);
+  } catch (e) { if (onEnd) onEnd(); }
+}
+
+// Entrada al módulo Cole desde la pantalla Escuela
+function enterCole(asignatura) {
+  const corpus = COLE_CORPUS[asignatura];
+  if (!corpus || corpus.length === 0) {
+    console.warn("Asignatura sin corpus:", asignatura);
+    return;
+  }
+  modoColeAsignatura = asignatura;
+  state.currentModule = "cole_" + asignatura; // marcador, no afecta a letras/numeros
+  stopMusic();
+  buildSessionCole(asignatura);
+  sessionIndex = 0;
+  sessionCorrect = 0;
+  sessionXpGained = 0;
+  renderProgressDots();
+  goScreen("session");
+  nextExerciseCole();
+}
+
+// Elige 6 items aleatorios sin repetir inmediatamente
+function buildSessionCole(asignatura) {
+  const corpus = COLE_CORPUS[asignatura];
+  const pool = [...corpus];
+  // Mezclar y coger 6 (o menos si el corpus es pequeño)
+  pool.sort(() => Math.random() - 0.5);
+  const n = Math.min(6, pool.length);
+  coleSessionItems = pool.slice(0, n);
+  sessionExercises = coleSessionItems.map(() => "cole"); // 6 entradas para los dots
+}
+
+// Avanza al siguiente ejercicio cole
+function nextExerciseCole() {
+  if (sessionIndex >= coleSessionItems.length) {
+    endSessionCole();
+    return;
+  }
+  renderProgressDots();
+  const item = coleSessionItems[sessionIndex];
+  renderColeItem(item);
+}
+
+// Renderiza un item según su tipo
+function renderColeItem(item) {
+  const container = document.getElementById("exercise-container");
+  const info = COLE_INFO[modoColeAsignatura];
+  const fluffy = state.mascotName || "Fluffy";
+
+  // Construir HTML según tipo
+  let preguntaHTML = "";
+  let extraBtn = "";
+
+  if (item.tipo === "vocab_imagen") {
+    preguntaHTML = `
+      <span class="cole-pregunta-emoji">${item.emoji}</span>
+      ${item.pregunta}
+    `;
+  } else if (item.tipo === "traducir") {
+    preguntaHTML = `<small style="display:block;font-size:0.85rem;color:var(--soft-ink);font-weight:600;margin-bottom:8px;">¿Cómo se dice?</small><strong>${item.pregunta}</strong>`;
+  } else if (item.tipo === "completar") {
+    preguntaHTML = item.pregunta;
+  } else if (item.tipo === "listening") {
+    preguntaHTML = `<small style="display:block;font-size:0.85rem;color:var(--soft-ink);font-weight:600;margin-bottom:8px;">${item.pregunta}</small>🎧`;
+    extraBtn = `<button class="sound-btn" id="cole-sound-btn" aria-label="Escuchar">🔊</button>`;
+  } else { // pregunta genérica
+    preguntaHTML = item.pregunta;
+  }
+
+  container.innerHTML = `
+    <div class="fluffy-intro">${fluffy} · ${info.nombre} ${info.icono}</div>
+    <div class="cole-pregunta">${preguntaHTML}</div>
+    ${extraBtn}
+    <div class="cole-opciones" id="cole-opciones"></div>
+  `;
+
+  // Si es listening, configurar botón de sonido y reproducir
+  if (item.tipo === "listening") {
+    const audioFn = () => {
+      const btn = document.getElementById("cole-sound-btn");
+      if (btn) btn.classList.add("playing");
+      speakLang(item.audio, item.audioLang || "en-US", () => {
+        if (btn) btn.classList.remove("playing");
+      });
+    };
+    const sb = document.getElementById("cole-sound-btn");
+    if (sb) sb.onclick = audioFn;
+    setTimeout(audioFn, 500);
+  }
+
+  // Mezclar opciones para que la correcta no esté siempre en el mismo sitio
+  const opcionesMezcladas = [...item.opciones].sort(() => Math.random() - 0.5);
+
+  const opcionesEl = document.getElementById("cole-opciones");
+  opcionesMezcladas.forEach(op => {
+    const b = document.createElement("button");
+    b.className = "cole-opcion";
+    b.textContent = op;
+    b.onclick = () => {
+      const correct = op === item.correcta;
+      b.classList.add(correct ? "correct" : "incorrect");
+      if (!correct) {
+        // Resaltar la correcta
+        [...opcionesEl.children].forEach(c => {
+          if (c.textContent === item.correcta) c.classList.add("correct");
+        });
+      }
+      [...opcionesEl.children].forEach(c => c.disabled = true);
+      setTimeout(() => finishExerciseCole(correct), 1400);
+    };
+    opcionesEl.appendChild(b);
+  });
+}
+
+// Cierra un ejercicio cole: aplica boost y avanza
+function finishExerciseCole(correct) {
+  if (correct) {
+    sessionCorrect++;
+    sessionXpGained += 4; // doble que en refuerzo: el cole vale más
+    state.xp += 4;
+    // Boost balanceado: +3 a TODAS las necesidades
+    Object.keys(state.necesidades).forEach(key => {
+      state.necesidades[key] = Math.min(100, (state.necesidades[key] || 0) + 3);
+    });
+  } else {
+    sessionXpGained += 1;
+    state.xp += 1;
+  }
+  saveState();
+  showFeedback(correct, () => {
+    sessionIndex++;
+    nextExerciseCole();
+  });
+}
+
+// Cierre de sesión cole
+function endSessionCole() {
+  state.totalSessions = (state.totalSessions || 0) + 1;
+  state.lastSession = new Date().toISOString();
+  saveState();
+  updateMascotAll();
+
+  const info = COLE_INFO[modoColeAsignatura];
+  const mascotName = state.mascotName || "Fluffy";
+  const ratio = sessionCorrect / coleSessionItems.length;
+
+  // Mensaje específico de la asignatura
+  let msg;
+  if (ratio >= 0.75) {
+    msg = `${info.msgExito} ${mascotName} ha aprendido un montón de ${info.nombre.toLowerCase()} contigo.`;
+  } else if (ratio >= 0.4) {
+    msg = `¡Bien hecho con ${info.nombre.toLowerCase()}! ${mascotName} se lo ha pasado genial.`;
+  } else {
+    msg = `${mascotName} está feliz de haber jugado a ${info.nombre.toLowerCase()} contigo.`;
+  }
+
+  document.getElementById("end-message").innerHTML = msg;
+  document.getElementById("xp-gained").textContent = `+${sessionXpGained} ⭐`;
+
+  const btnEnd = document.getElementById("btn-end-again");
+  if (btnEnd) {
+    btnEnd.textContent = END_BUTTON_TEXTS[state.toggleBtnEnd % END_BUTTON_TEXTS.length];
+    state.toggleBtnEnd = (state.toggleBtnEnd || 0) + 1;
+  }
+
+  // En cole también pueden ganar trofeos (cada 2 sesiones, igual que letras/números)
+  const trofeoGanado = checkTrophyEarned();
+
+  // Limpiar modo cole para que las próximas sesiones de letras/números funcionen normal
+  modoColeAsignatura = null;
+
+  if (trofeoGanado) {
+    showTrophyScreen();
+    playMusic();
+  } else {
+    goScreen("end");
+    playMelodySuccess();
+    playMusic();
+  }
+}
+  
+  /* ==========================================================================
    HUB: entrar a un módulo
    ========================================================================== */
 
@@ -7527,7 +7738,18 @@ function goScreen(name) {
 }
 
 function goHome() { goCasa(); }
-function playAgain() { startSession(); }
+function playAgain() {
+  /* === FLUFFY BRAIN — CAMBIOS COLE === */
+  // Si venimos de cole, "Jugar otra vez" debe ir a la escuela (que elija qué)
+  // En vez de relanzar la misma asignatura sin pensarlo
+  if (state.currentModule && state.currentModule.indexOf("cole_") === 0) {
+    state.currentModule = "letras"; // reset a default
+    saveState();
+    goEscuela();
+    return;
+  }
+  startSession();
+}
 
 /* ==========================================================================
    INIT
