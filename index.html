@@ -1214,6 +1214,42 @@
       .intro-fluffy-wrap { width: 150px; height: 150px; }
     }
 
+    /* ============ TAP TO START OVERLAY ============ */
+    .intro-tap-start {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #FF8B6B 0%, #FFB088 50%, #FFD9A0 100%);
+      z-index: 10000;
+      cursor: pointer;
+      animation: tapStartPulse 2s ease-in-out infinite;
+    }
+    .intro-tap-start.hidden { display: none; }
+    .intro-tap-content { text-align: center; pointer-events: none; }
+    .intro-tap-emoji {
+      font-size: 6rem;
+      margin-bottom: 16px;
+      animation: tapStartBounce 1.2s ease-in-out infinite;
+    }
+    .intro-tap-text {
+      font-family: 'Baloo 2', system-ui, sans-serif;
+      font-weight: 800;
+      font-size: 2rem;
+      color: #FFFFFF;
+      text-shadow: 0 4px 0 #C73E25, 0 6px 12px rgba(199,62,37,0.4);
+      letter-spacing: 0.05em;
+    }
+    @keyframes tapStartPulse {
+      0%, 100% { background: linear-gradient(135deg, #FF8B6B 0%, #FFB088 50%, #FFD9A0 100%); }
+      50%      { background: linear-gradient(135deg, #FFA088 0%, #FFC4A0 50%, #FFE5B8 100%); }
+    }
+    @keyframes tapStartBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-12px) scale(1.08); }
+    }
+
     /* ============ BOTÓN VOLVER A CASA UNIVERSAL ============ */
     .back-home {
       position: fixed;
@@ -2151,8 +2187,17 @@
         <div class="intro-chispa" id="intro-chispa"></div>
       </div>
     </div>
-    <div class="intro-skip">toca para saltar</div>
+<div class="intro-skip">toca para saltar</div>
+    <!-- Overlay: TOCA PARA EMPEZAR (desbloquea audio en iOS) -->
+    <div class="intro-tap-start" id="intro-tap-start">
+      <div class="intro-tap-content">
+        <div class="intro-tap-emoji">🐶</div>
+        <div class="intro-tap-text">Toca para empezar</div>
+      </div>
+    </div>
   </div>
+
+  <!-- OVERLAY DE CUIDADO (se usa sobre cualquier pantalla) -->
 
   <!-- OVERLAY DE CUIDADO (se usa sobre cualquier pantalla) -->
 
