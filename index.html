@@ -5363,6 +5363,146 @@ function playMelodySuccess() {
   notes.forEach(n => playNote(n.f, n.t, n.d, 0.14));
 }
 
+
+/* === FLUFFY BRAIN — INTRO V2 ===
+   Sonidos Toca Boca: pops, plops, voz sintetizada, mlem.
+   Todos usan el AudioContext existente (audioCtx) para no romper iOS unlock. */
+
+// Plop suave: entrada de elemento ligero (texto, fade in)
+function playPlop() {
+  if (!audioCtx) return;
+  try {
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(180, t);
+    osc.frequency.exponentialRampToValueAtTime(90, t + 0.12);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.25, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + 0.16);
+  } catch (e) {}
+}
+
+// Pop seco: tapa que salta, descorche
+function playPop() {
+  if (!audioCtx) return;
+  try {
+    const t = audioCtx.currentTime;
+    // Click de transitorio (ruido corto)
+    const noiseBuf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.04, audioCtx.sampleRate);
+    const data = noiseBuf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 4);
+    }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = noiseBuf;
+    const noiseGain = audioCtx.createGain();
+    noiseGain.gain.setValueAtTime(0.18, t);
+    noise.connect(noiseGain).connect(audioCtx.destination);
+    noise.start(t);
+
+    // Tono ascendente que da el "pop"
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(400, t);
+    osc.frequency.exponentialRampToValueAtTime(900, t + 0.06);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.3, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + 0.12);
+  } catch (e) {}
+}
+
+// Mlem: chasquido de boca, tras "Fluffy Brain"
+function playMlem() {
+  if (!audioCtx) return;
+  try {
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(800, t);
+    filter.frequency.exponentialRampToValueAtTime(300, t + 0.08);
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(120, t);
+    osc.frequency.exponentialRampToValueAtTime(60, t + 0.08);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.18, t + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
+    osc.connect(filter).connect(gain).connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + 0.12);
+  } catch (e) {}
+}
+
+// Voz "FLUFFY BRAIN" sintetizada con dos sílabas (estilo Toca Boca)
+// Dos formantes alegres, no palabras reales; suena infantil y abstracto
+function playFluffyBrainVoice() {
+  if (!audioCtx) return;
+  try {
+    const t = audioCtx.currentTime;
+    // Sílaba 1: "FLU-ffy" — pitch alto descendente leve
+    syllable(t,         0.22, [520, 480], "triangle", 0.16);
+    // Sílaba 2: "ffy" — corta, pitch ligeramente más bajo
+    syllable(t + 0.18,  0.14, [440, 420], "triangle", 0.12);
+    // (pequeño hueco)
+    // Sílaba 3: "BRAIN" — pitch sube alegre
+    syllable(t + 0.45,  0.32, [380, 540], "triangle", 0.18);
+
+    function syllable(start, dur, [f1, f2], wave, vol) {
+      const osc = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = wave;
+      osc2.type = wave;
+      osc.frequency.setValueAtTime(f1, start);
+      osc.frequency.exponentialRampToValueAtTime(f2, start + dur);
+      // Segundo oscilador a quinta para dar cuerpo (estilo voz infantil)
+      osc2.frequency.setValueAtTime(f1 * 1.5, start);
+      osc2.frequency.exponentialRampToValueAtTime(f2 * 1.5, start + dur);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(vol, start + 0.02);
+      gain.gain.setValueAtTime(vol, start + dur - 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+      osc.connect(gain);
+      osc2.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(start);
+      osc2.start(start);
+      osc.stop(start + dur + 0.01);
+      osc2.stop(start + dur + 0.01);
+    }
+  } catch (e) {}
+}
+
+// Pop de letra (más agudo, varía con el índice para que cada letra suene distinta)
+function playLetterPop(index) {
+  if (!audioCtx) return;
+  try {
+    const t = audioCtx.currentTime;
+    const baseFreq = 600 + index * 40; // cada letra un semitono arriba
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(baseFreq, t);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.4, t + 0.04);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.15, t + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + 0.1);
+  } catch (e) {}
+}
+
 // Melodía de trofeo — más larga y celebratoria
 function playMelodyTrophy() {
   const notes = [
