@@ -1293,22 +1293,23 @@
       50%      { transform: translateX(-50%) translateY(-10px); }
     }
 
-    /* ============ PANTALLA ESCUELA ============ */
+/* ============ PANTALLA ESCUELA ============ */
     #screen-escuela {
       background: linear-gradient(170deg, #FFC8D4 0%, #FFB0BE 100%);
-      padding: 70px 20px 30px;
+      padding: 64px 18px 24px;
       align-items: center;
-      gap: 18px;
+      gap: 12px;
+      overflow-y: auto;
     }
 
     .escuela-titulo {
       font-family: var(--display);
       font-weight: 800;
-      font-size: 2.1rem;
+      font-size: 1.9rem;
       color: white;
       text-align: center;
       text-shadow: 0 3px 0 rgba(199, 76, 120, 0.5), 0 4px 10px rgba(0,0,0,0.15);
-      margin-top: 10px;
+      margin-top: 4px;
     }
 
     .escuela-subtitulo {
@@ -1316,9 +1317,158 @@
       text-align: center;
       font-family: var(--display);
       font-weight: 600;
-      font-size: 1.1rem;
-      margin-bottom: 12px;
+      font-size: 1rem;
+      margin-bottom: 4px;
       opacity: 0.9;
+    }
+
+    /* === FLUFFY BRAIN — ESCUELA SECCIONES (Refuerzo + Cole) === */
+    .escuela-seccion {
+      width: 100%;
+      max-width: 460px;
+    }
+
+    .escuela-seccion-titulo {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: white;
+      text-align: left;
+      padding: 0 12px;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 0 rgba(199, 76, 120, 0.4);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      opacity: 0.95;
+    }
+
+    .escuela-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .cole-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: white;
+      color: var(--ink);
+      padding: 14px 10px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-button);
+      border: none;
+      font-family: var(--display);
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: transform 0.15s, box-shadow 0.15s;
+      min-height: 100px;
+    }
+
+    .cole-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(74, 63, 85, 0.15);
+    }
+
+    .cole-btn-icon {
+      font-size: 2.4rem;
+      line-height: 1;
+    }
+
+    .cole-btn-label {
+      font-size: 1rem;
+      line-height: 1.1;
+    }
+
+    .cole-btn-label small {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--soft-ink);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    /* Acentos por asignatura */
+    .cole-btn-letras    { background: linear-gradient(155deg, #FFFFFF, #FFE4D1); }
+    .cole-btn-numeros   { background: linear-gradient(155deg, #FFFFFF, #E4F0FF); }
+    .cole-btn-ingles    { background: linear-gradient(155deg, #FFFFFF, #E8F0FF); }
+    .cole-btn-mates     { background: linear-gradient(155deg, #FFFFFF, #FFE8D6); }
+    .cole-btn-castellano{ background: linear-gradient(155deg, #FFFFFF, #FFD4D4); }
+    .cole-btn-catalan   { background: linear-gradient(155deg, #FFFFFF, #FFE8B8); }
+    .cole-btn-medi      { background: linear-gradient(155deg, #FFFFFF, #D4F0D4); }
+
+    /* Ejercicios cole — pregunta y opciones */
+    .cole-pregunta {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--ink);
+      text-align: center;
+      background: white;
+      padding: 22px 26px;
+      border-radius: 22px;
+      box-shadow: var(--shadow-soft);
+      max-width: 92vw;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    .cole-pregunta strong {
+      color: var(--coral);
+      font-size: 1.7rem;
+    }
+
+    .cole-pregunta-emoji {
+      font-size: 4.5rem;
+      display: block;
+      margin: 4px 0 12px;
+      animation: pop 0.5s ease;
+    }
+
+    .cole-opciones {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 480px;
+      align-items: center;
+    }
+
+    .cole-opcion {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.4rem;
+      background: white;
+      color: var(--ink);
+      border: 3px solid var(--peach);
+      border-radius: 18px;
+      padding: 16px 22px;
+      box-shadow: var(--shadow-button);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      width: 100%;
+      max-width: 380px;
+      min-height: 56px;
+      text-align: center;
+    }
+
+    .cole-opcion:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(74, 63, 85, 0.15);
+    }
+
+    .cole-opcion.correct { background: var(--mint); color: white; border-color: var(--mint); }
+    .cole-opcion.incorrect { background: #FFB8B8; color: var(--ink); border-color: #FFB8B8; }
+
+    /* Animación cole en cuidado overlay */
+    .cuidado-accion.cole { top: 18%; right: 14%; animation-name: cuidado-cole; font-size: 3.2rem; }
+    @keyframes cuidado-cole {
+      0%, 100% { transform: translateY(0) rotate(-3deg); opacity: 0.85; }
+      50% { transform: translateY(-12px) rotate(3deg); opacity: 1; }
     }
 
     /* ============ PANTALLA PERFIL MASCOTA ============ */
@@ -1877,20 +2027,51 @@
     </div>
   </div>
 
-  <!-- PANTALLA ESCUELA (selección Letras/Números) -->
+<!-- PANTALLA ESCUELA — REORGANIZADA: Refuerzo + Cole -->
+  <!-- /* === FLUFFY BRAIN — CAMBIOS COLE === */ -->
   <div id="screen-escuela" class="screen">
     <button class="back-home" onclick="goCasa()" aria-label="Volver a casa">🏠</button>
     <div class="escuela-titulo">Escuela de Fluffy</div>
     <div class="escuela-subtitulo">¿Qué clase quieres hoy?</div>
-    <div class="hub-buttons" style="max-width:420px;width:100%;">
-      <button class="hub-btn hub-btn-letras" onclick="enterModule('letras')">
-        <div class="hub-btn-icon">📖</div>
-        <div class="hub-btn-label">Clase de letras<small>Leer y escribir con Fluffy</small></div>
-      </button>
-      <button class="hub-btn hub-btn-numeros" onclick="enterModule('numeros')">
-        <div class="hub-btn-icon">🔢</div>
-        <div class="hub-btn-label">Clase de números<small>Contar con Fluffy</small></div>
-      </button>
+
+    <div class="escuela-seccion">
+      <div class="escuela-seccion-titulo">✨ Refuerzo</div>
+      <div class="escuela-grid">
+        <button class="cole-btn cole-btn-letras" onclick="enterModule('letras')">
+          <div class="cole-btn-icon">📖</div>
+          <div class="cole-btn-label">Letras<small>Leer y escribir</small></div>
+        </button>
+        <button class="cole-btn cole-btn-numeros" onclick="enterModule('numeros')">
+          <div class="cole-btn-icon">🔢</div>
+          <div class="cole-btn-label">Números<small>Contar y operar</small></div>
+        </button>
+      </div>
+    </div>
+
+    <div class="escuela-seccion">
+      <div class="escuela-seccion-titulo">🎒 Cole</div>
+      <div class="escuela-grid">
+        <button class="cole-btn cole-btn-ingles" onclick="enterCole('ingles')">
+          <div class="cole-btn-icon">🇬🇧</div>
+          <div class="cole-btn-label">Inglés<small>Heroes 3</small></div>
+        </button>
+        <button class="cole-btn cole-btn-mates" onclick="enterCole('mates')">
+          <div class="cole-btn-icon">➕</div>
+          <div class="cole-btn-label">Mates<small>Cole de mates</small></div>
+        </button>
+        <button class="cole-btn cole-btn-castellano" onclick="enterCole('castellano')">
+          <div class="cole-btn-icon">🇪🇸</div>
+          <div class="cole-btn-label">Castellano<small>Lengua</small></div>
+        </button>
+        <button class="cole-btn cole-btn-catalan" onclick="enterCole('catalan')">
+          <div class="cole-btn-icon">🟡🔴</div>
+          <div class="cole-btn-label">Català<small>Llengua</small></div>
+        </button>
+        <button class="cole-btn cole-btn-medi" onclick="enterCole('medi')" style="grid-column: 1 / -1;">
+          <div class="cole-btn-icon">🌍</div>
+          <div class="cole-btn-label">Medi<small>Naturals i socials</small></div>
+        </button>
+      </div>
     </div>
   </div>
 
