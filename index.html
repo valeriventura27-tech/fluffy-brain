@@ -5079,6 +5079,91 @@ const MASCOTA_CAJA = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/s
   <path d="M 94 103 Q 100 108 106 103" stroke="#2D2438" stroke-width="1.8" fill="none" stroke-linecap="round"/>
 </svg>`;
 
+/* === FLUFFY BRAIN — INTRO V2 ===
+   Caja Toca Boca: más colorida, lunares, lazo grande, estética juguete.
+   Diseñada para abrirse: la tapa se separa con animación CSS. */
+
+const INTRO_CAJA_BASE = `
+<svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg" class="intro-caja-svg">
+  <defs>
+    <linearGradient id="cajaGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFB088"/>
+      <stop offset="100%" stop-color="#FF7A5C"/>
+    </linearGradient>
+    <linearGradient id="cajaGradSide" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E85A3D"/>
+      <stop offset="100%" stop-color="#C73E25"/>
+    </linearGradient>
+  </defs>
+  <!-- Cuerpo de la caja con lunares -->
+  <g class="caja-cuerpo">
+    <!-- Sombra -->
+    <ellipse cx="120" cy="190" rx="95" ry="8" fill="rgba(0,0,0,0.18)"/>
+    <!-- Lateral derecho (perspectiva) -->
+    <path d="M 200 75 L 215 90 L 215 175 L 200 185 Z" fill="url(#cajaGradSide)"/>
+    <!-- Frontal -->
+    <rect x="35" y="75" width="165" height="110" rx="6" fill="url(#cajaGrad)"/>
+    <!-- Lunares blancos -->
+    <circle cx="65" cy="105" r="7" fill="rgba(255,255,255,0.6)"/>
+    <circle cx="105" cy="135" r="6" fill="rgba(255,255,255,0.6)"/>
+    <circle cx="155" cy="115" r="7" fill="rgba(255,255,255,0.6)"/>
+    <circle cx="180" cy="155" r="5" fill="rgba(255,255,255,0.6)"/>
+    <circle cx="80" cy="160" r="5" fill="rgba(255,255,255,0.6)"/>
+    <circle cx="135" cy="170" r="6" fill="rgba(255,255,255,0.6)"/>
+    <!-- Cinta vertical decorativa -->
+    <rect x="110" y="75" width="20" height="110" fill="#FFD93D"/>
+  </g>
+</svg>`;
+
+const INTRO_CAJA_TAPA = `
+<svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg" class="intro-caja-tapa-svg">
+  <defs>
+    <linearGradient id="tapaGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFC8A8"/>
+      <stop offset="100%" stop-color="#FF8B6B"/>
+    </linearGradient>
+  </defs>
+  <!-- Tapa con perspectiva -->
+  <g>
+    <path d="M 30 80 L 200 80 L 215 95 L 45 95 Z" fill="#D04A28"/>
+    <rect x="30" y="65" width="170" height="22" rx="4" fill="url(#tapaGrad)"/>
+    <!-- Lazo: dos bucles -->
+    <g class="lazo">
+      <ellipse cx="100" cy="50" rx="22" ry="14" fill="#FFD93D" transform="rotate(-15 100 50)"/>
+      <ellipse cx="140" cy="50" rx="22" ry="14" fill="#FFD93D" transform="rotate(15 140 50)"/>
+      <circle cx="120" cy="55" r="8" fill="#F5B700"/>
+      <!-- Cintas que cuelgan -->
+      <path d="M 115 60 Q 110 70 105 78" stroke="#FFD93D" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M 125 60 Q 130 70 135 78" stroke="#FFD93D" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>`;
+
+/* Chispa/squiggle dibujada a mano que sustituye al cerebro 🧠
+   Forma: pensamiento-burbuja con squiggles, paleta cálida coherente */
+const INTRO_CHISPA = `
+<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="intro-chispa-svg">
+  <defs>
+    <radialGradient id="chispaGrad">
+      <stop offset="0%" stop-color="#FFD93D"/>
+      <stop offset="100%" stop-color="#FF7A5C"/>
+    </radialGradient>
+  </defs>
+  <!-- Chispa de 4 puntas estilo dibujado, con asimetría intencionada -->
+  <path d="M 40 8
+           C 42 22, 48 30, 62 34
+           C 50 36, 44 42, 42 56
+           C 40 44, 32 38, 18 36
+           C 32 34, 38 26, 40 8 Z"
+        fill="url(#chispaGrad)"
+        stroke="#C73E25"
+        stroke-width="2.5"
+        stroke-linejoin="round"/>
+  <!-- Pequeño squiggle adicional -->
+  <circle cx="62" cy="20" r="3.5" fill="#FFD93D" stroke="#C73E25" stroke-width="2"/>
+  <circle cx="20" cy="58" r="2.5" fill="#FFD93D" stroke="#C73E25" stroke-width="1.5"/>
+</svg>`;
+
 /* ==========================================================================
    ESTADO DEL JUEGO (localStorage)
    ========================================================================== */
