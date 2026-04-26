@@ -2110,12 +2110,27 @@
 
 <div id="app">
 
-  <!-- INTRO SCREEN (FLUFFY BRAIN) -->
+<!-- INTRO SCREEN V2 — Toca Boca style -->
   <div id="screen-intro" class="screen active" onclick="skipIntro()">
-    <div class="intro-fluffy" id="intro-fluffy"></div>
-    <div class="intro-logo" id="intro-logo"></div>
-    <div class="intro-brain" id="intro-brain">🧠</div>
-    <div class="intro-credit" id="intro-credit">by Valeria Ventura</div>
+    <div class="intro-stage">
+      <!-- Fase 1: Crédito Valeria -->
+      <div class="intro-credit-block" id="intro-credit-block">
+        <div class="intro-credit-presenta">presenta</div>
+        <div class="intro-credit-name">V A L E R I A &nbsp; V E N T U R A</div>
+      </div>
+      <!-- Fase 2-3: Caja con tapa que se abre -->
+      <div class="intro-caja-wrap" id="intro-caja-wrap">
+        <div class="intro-caja-base" id="intro-caja-base"></div>
+        <div class="intro-caja-tapa" id="intro-caja-tapa"></div>
+      </div>
+      <!-- Fase 3: Fluffy emerge de la caja -->
+      <div class="intro-fluffy-wrap" id="intro-fluffy-wrap"></div>
+      <!-- Fase 4: Wordmark FLUFFY BRAIN + chispa -->
+      <div class="intro-wordmark" id="intro-wordmark">
+        <div class="intro-wordmark-letters" id="intro-wordmark-letters"></div>
+        <div class="intro-chispa" id="intro-chispa"></div>
+      </div>
+    </div>
     <div class="intro-skip">toca para saltar</div>
   </div>
 
