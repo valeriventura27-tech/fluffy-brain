@@ -2181,21 +2181,10 @@
       </div>
       <!-- Fase 3: Fluffy emerge de la caja -->
       <div class="intro-fluffy-wrap" id="intro-fluffy-wrap"></div>
-      <!-- Fase 4: Wordmark FLUFFY BRAIN + chispa -->
+     <!-- Fase 4: Wordmark FLUFFY BRAIN -->
       <div class="intro-wordmark" id="intro-wordmark">
         <div class="intro-wordmark-letters" id="intro-wordmark-letters"></div>
-        <div class="intro-chispa" id="intro-chispa"></div>
       </div>
-    </div>
-<div class="intro-skip">toca para saltar</div>
-    <!-- Overlay: TOCA PARA EMPEZAR (desbloquea audio en iOS) -->
-    <div class="intro-tap-start" id="intro-tap-start">
-      <div class="intro-tap-content">
-        <div class="intro-tap-emoji">🐶</div>
-        <div class="intro-tap-text">Toca para empezar</div>
-      </div>
-    </div>
-  </div>
 
   <!-- OVERLAY DE CUIDADO (se usa sobre cualquier pantalla) -->
 
@@ -8513,34 +8502,16 @@ function bootApp() {
   const destino = (!state.mascotName || state.mascotName.length === 0) ? "onboard" : "casa";
   playIntro(destino);
 }
-// Conectar overlay "Toca para empezar" — desbloquea audio en iOS
-// y luego lanza la intro de verdad
-(function setupTapStart() {
-  const overlay = document.getElementById("intro-tap-start");
-  if (!overlay) return;
-  
-  const handleStart = (e) => {
-    e.preventDefault();
-    // Desbloquear audio AHORA, con el gesto del usuario
-    unlockAudio();
-    // Ocultar overlay
-    overlay.classList.add("hidden");
-    // Lanzar la intro real
-    const destino = (!state.mascotName || state.mascotName.length === 0) ? "onboard" : "casa";
-    playIntro(destino);
-  };
-  
-  overlay.addEventListener("touchend", handleStart, { passive: false, once: true });
-  overlay.addEventListener("click", handleStart, { once: true });
-})();
 function bootApp() {
   updateMascotAll();
   if (!state.lastNecesidadesUpdate) {
     state.lastNecesidadesUpdate = Date.now();
     saveState();
   }
-  // Ya no llamamos a playIntro() aquí — lo hace setupTapStart tras el toque
+  const destino = (!state.mascotName || state.mascotName.length === 0) ? "onboard" : "casa";
+  playIntro(destino);
 }
+bootApp();
 </script>
 
 </body>
