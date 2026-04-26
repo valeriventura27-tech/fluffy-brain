@@ -4780,7 +4780,42 @@ const CATALAN_CORPUS = [
   { tipo:"traducir", pregunta:"libro", correcta:"llibre", opciones:["llibre","quadern","llapis"] },
   { tipo:"completar", pregunta:"Jo ___ una nena.", correcta:"sóc", opciones:["sóc","ets","és"] },
   { tipo:"completar", pregunta:"Tu ___ molt alt.", correcta:"ets", opciones:["ets","sóc","és"] },
-  { tipo:"pregunta", pregunta:"Plural de \"gos\":",
+  { tipo:"pregunta", pregunta:"Plural de \"gos\":", correcta:"gossos", opciones:["gossos","gosos","gosses"] },
+  { tipo:"pregunta", pregunta:"Femenino de \"nen\":", correcta:"nena", opciones:["nena","nens","nens"] },
+  { tipo:"traducir", pregunta:"hola", correcta:"hola", opciones:["hola","adéu","gràcies"] },
+];
+
+// ============ MEDI — placeholder (Naturals i Socials, 3r) ============
+const MEDI_CORPUS = [
+  { tipo:"pregunta", pregunta:"¿Cuántos planetas tiene el sistema solar?", correcta:"8", opciones:["8","9","7"] },
+  { tipo:"pregunta", pregunta:"¿Cuál es el planeta más cercano al Sol?", correcta:"Mercurio", opciones:["Mercurio","Venus","Tierra"] },
+  { tipo:"pregunta", pregunta:"¿Qué órgano bombea la sangre?", correcta:"Corazón", opciones:["Corazón","Pulmones","Estómago"] },
+  { tipo:"pregunta", pregunta:"¿Para qué sirven los pulmones?", correcta:"Respirar", opciones:["Respirar","Comer","Pensar"] },
+  { tipo:"pregunta", pregunta:"¿Cuántos huesos tiene aproximadamente un adulto?", correcta:"206", opciones:["206","100","500"] },
+  { tipo:"pregunta", pregunta:"¿Qué animales ponen huevos?", correcta:"Aves", opciones:["Aves","Mamíferos","Peces y mamíferos"] },
+  { tipo:"pregunta", pregunta:"La capital de Cataluña es:", correcta:"Barcelona", opciones:["Barcelona","Madrid","Girona"] },
+  { tipo:"pregunta", pregunta:"La capital de España es:", correcta:"Madrid", opciones:["Madrid","Barcelona","Sevilla"] },
+  { tipo:"pregunta", pregunta:"¿Qué necesitan las plantas para vivir?", correcta:"Sol y agua", opciones:["Sol y agua","Solo agua","Solo tierra"] },
+  { tipo:"pregunta", pregunta:"¿Qué estación viene después del invierno?", correcta:"Primavera", opciones:["Primavera","Verano","Otoño"] },
+];
+
+// Diccionario para acceder al corpus por nombre
+const COLE_CORPUS = {
+  ingles:     INGLES_CORPUS,
+  mates:      MATES_CORPUS,
+  castellano: CASTELLANO_CORPUS,
+  catalan:    CATALAN_CORPUS,
+  medi:       MEDI_CORPUS
+};
+
+// Metadatos de cada asignatura
+const COLE_INFO = {
+  ingles:     { icono:"🇬🇧", nombre:"Inglés",     msgExito:"¡Great job!"    },
+  mates:      { icono:"➕", nombre:"Mates",      msgExito:"¡Cuántas mates!" },
+  castellano: { icono:"🇪🇸", nombre:"Castellano", msgExito:"¡Muy bien hecho!"},
+  catalan:    { icono:"🟡🔴", nombre:"Català",     msgExito:"¡Molt bé fet!"   },
+  medi:       { icono:"🌍", nombre:"Medi",       msgExito:"¡Cuánto sabes!"  }
+};
 
 /* ==========================================================================
    MASCOTA BULLDOG FRANCÉS FLUFFY - 4 fases de crecimiento
