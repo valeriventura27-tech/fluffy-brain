@@ -455,18 +455,39 @@
     }
 
     .discrim-cell {
+.discrim-cell {
       font-family: var(--display);
       font-weight: 800;
-      font-size: 3rem;
+      font-size: 1.8rem;
       color: var(--ink);
       background: var(--cream);
       border: none;
-      border-radius: 16px;
-      padding: 12px;
-      min-width: 54px;
-      min-height: 54px;
+      border-radius: 14px;
+      padding: 10px 6px;
+      min-width: 56px;
+      min-height: 56px;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
       cursor: pointer;
       transition: background 0.15s, transform 0.15s;
+      overflow: hidden;
+    }
+
+    /* Para sílabas/palabras de 2+ caracteres, aún más pequeño */
+    .discrim-cell.larga {
+      font-size: 1.2rem;
+      width: 64px;
+      height: 56px;
+      min-width: 64px;
+    }
+
+    @media (max-width: 480px) {
+      .discrim-cell { font-size: 1.5rem; width: 48px; height: 48px; min-width: 48px; min-height: 48px; }
+      .discrim-cell.larga { font-size: 1rem; width: 56px; }
     }
 
     .discrim-cell:active { transform: scale(0.92); }
@@ -6682,7 +6703,9 @@ function renderDiscrim() {
     const cell = document.createElement("button");
     cell.className = "discrim-cell";
     const esDistinta = i === posDistinta;
-    cell.textContent = esDistinta ? distinta : base;
+    const contenido = esDistinta ? distinta : base;
+    cell.textContent = contenido;
+    if (contenido.length >= 2) cell.classList.add("larga");
     cell.onclick = () => {
       if (esDistinta) {
         cell.classList.add("found");
