@@ -4549,6 +4549,239 @@ const TEXTOS = [
   {id:"t115",n:6,titulo:"{m} y la estrella fugaz",texto:"Una noche de verano, la familia sale al jardín a mirar las estrellas. {m} se tumba boca arriba y mira el cielo oscuro lleno de puntitos brillantes. De pronto, una estrella fugaz cruza el cielo dejando una cola de luz preciosa. Mamá dice que hay que pedir un deseo. {m} cierra los ojos con fuerza. Nadie sabe qué deseo pide {m}, pero seguro que es algo bonito como tener muchos huesos o pasear por el prado con su familia para siempre.",pregunta:"¿Qué cruza el cielo?",opciones:["Un helicóptero enorme","Una estrella fugaz","Una mariposa brillante"],correcta:1},
 ];
 
+  /* ==========================================================================
+   === FLUFFY BRAIN — CAMBIOS COLE ===
+   CORPUS CURRICULAR (Cole)
+
+   Cada asignatura tiene un array de items. Cada item tiene un campo `tipo`
+   que define cómo se renderiza. Los tipos disponibles son:
+
+   - "vocab_imagen":   Pregunta con emoji + opciones (texto)
+                       { tipo:"vocab_imagen", emoji:"🐶", pregunta:"How do you say...?",
+                         correcta:"dog", opciones:["dog","cat","fish"] }
+
+   - "traducir":       Texto a traducir + opciones
+                       { tipo:"traducir", pregunta:"rojo", correcta:"red",
+                         opciones:["red","blue","green"] }
+
+   - "completar":      Frase con hueco ___ + opciones
+                       { tipo:"completar", pregunta:"I ___ a girl", correcta:"am",
+                         opciones:["am","is","are"] }
+
+   - "listening":      TTS lee algo (en `audio` y `audioLang`) + opciones escritas
+                       { tipo:"listening", audio:"apple", audioLang:"en-US",
+                         pregunta:"Escucha y elige", correcta:"apple",
+                         opciones:["apple","banana","orange"] }
+
+   - "pregunta":       Pregunta de texto libre + opciones (genérico)
+                       { tipo:"pregunta", pregunta:"¿2 + 3?", correcta:"5",
+                         opciones:["3","5","7"] }
+
+   Para AMPLIAR contenido, simplemente añade más items al array correspondiente.
+   ========================================================================== */
+
+// ============ INGLÉS — Heroes 3 (Macmillan) ============
+// Cubre: Starter (Meet the Heroes!), Unit 1 Places, Unit 2 Activities,
+// Unit 3 Technology, Unit 4 Food, Unit 5 Recycling, Unit 6 A show
+const INGLES_CORPUS = [
+  // ─── STARTER: Meet the Heroes! (saludos, números, colores, alfabeto) ───
+  { tipo:"traducir", pregunta:"hola", correcta:"hello", opciones:["hello","goodbye","please"] },
+  { tipo:"traducir", pregunta:"adiós", correcta:"goodbye", opciones:["goodbye","sorry","thanks"] },
+  { tipo:"traducir", pregunta:"gracias", correcta:"thank you", opciones:["thank you","please","sorry"] },
+  { tipo:"traducir", pregunta:"por favor", correcta:"please", opciones:["please","sorry","hello"] },
+  { tipo:"completar", pregunta:"___ name is Anna.", correcta:"My", opciones:["My","I","You"] },
+  { tipo:"completar", pregunta:"How ___ you?", correcta:"are", opciones:["are","is","am"] },
+  { tipo:"completar", pregunta:"I ___ nine years old.", correcta:"am", opciones:["am","is","are"] },
+  { tipo:"traducir", pregunta:"rojo", correcta:"red", opciones:["red","blue","green"] },
+  { tipo:"traducir", pregunta:"azul", correcta:"blue", opciones:["blue","yellow","red"] },
+  { tipo:"traducir", pregunta:"amarillo", correcta:"yellow", opciones:["yellow","green","white"] },
+  { tipo:"traducir", pregunta:"verde", correcta:"green", opciones:["green","blue","black"] },
+  { tipo:"traducir", pregunta:"negro", correcta:"black", opciones:["black","brown","white"] },
+  { tipo:"traducir", pregunta:"blanco", correcta:"white", opciones:["white","yellow","pink"] },
+  { tipo:"traducir", pregunta:"rosa", correcta:"pink", opciones:["pink","purple","red"] },
+  { tipo:"traducir", pregunta:"naranja", correcta:"orange", opciones:["orange","yellow","red"] },
+  { tipo:"vocab_imagen", emoji:"🔴", pregunta:"What colour is it?", correcta:"red", opciones:["red","blue","green"] },
+  { tipo:"vocab_imagen", emoji:"🟢", pregunta:"What colour is it?", correcta:"green", opciones:["green","yellow","red"] },
+  { tipo:"vocab_imagen", emoji:"🔵", pregunta:"What colour is it?", correcta:"blue", opciones:["blue","pink","white"] },
+  { tipo:"traducir", pregunta:"uno", correcta:"one", opciones:["one","two","three"] },
+  { tipo:"traducir", pregunta:"cinco", correcta:"five", opciones:["five","four","six"] },
+  { tipo:"traducir", pregunta:"diez", correcta:"ten", opciones:["ten","eleven","nine"] },
+  { tipo:"traducir", pregunta:"veinte", correcta:"twenty", opciones:["twenty","twelve","ten"] },
+  { tipo:"listening", audio:"seven", audioLang:"en-US", pregunta:"Listen and choose", correcta:"seven", opciones:["seven","eleven","ten"] },
+  { tipo:"listening", audio:"eight", audioLang:"en-US", pregunta:"Listen and choose", correcta:"eight", opciones:["eight","four","two"] },
+
+  // ─── UNIT 1: Places (lugares de la ciudad) ───
+  { tipo:"traducir", pregunta:"escuela", correcta:"school", opciones:["school","park","shop"] },
+  { tipo:"traducir", pregunta:"parque", correcta:"park", opciones:["park","zoo","beach"] },
+  { tipo:"traducir", pregunta:"hospital", correcta:"hospital", opciones:["hospital","library","museum"] },
+  { tipo:"traducir", pregunta:"biblioteca", correcta:"library", opciones:["library","cinema","shop"] },
+  { tipo:"traducir", pregunta:"museo", correcta:"museum", opciones:["museum","castle","park"] },
+  { tipo:"traducir", pregunta:"cine", correcta:"cinema", opciones:["cinema","supermarket","beach"] },
+  { tipo:"traducir", pregunta:"supermercado", correcta:"supermarket", opciones:["supermarket","market","shop"] },
+  { tipo:"traducir", pregunta:"calle", correcta:"street", opciones:["street","road","square"] },
+  { tipo:"traducir", pregunta:"playa", correcta:"beach", opciones:["beach","park","river"] },
+  { tipo:"vocab_imagen", emoji:"🏫", pregunta:"What place is it?", correcta:"school", opciones:["school","hospital","library"] },
+  { tipo:"vocab_imagen", emoji:"🏥", pregunta:"What place is it?", correcta:"hospital", opciones:["hospital","park","museum"] },
+  { tipo:"vocab_imagen", emoji:"🎬", pregunta:"What place is it?", correcta:"cinema", opciones:["cinema","library","shop"] },
+  { tipo:"vocab_imagen", emoji:"🏖️", pregunta:"What place is it?", correcta:"beach", opciones:["beach","river","park"] },
+  { tipo:"completar", pregunta:"There ___ a park near my house.", correcta:"is", opciones:["is","are","am"] },
+  { tipo:"completar", pregunta:"There ___ two cinemas in my town.", correcta:"are", opciones:["are","is","am"] },
+  { tipo:"completar", pregunta:"The school is ___ the park.", correcta:"next to", opciones:["next to","under","in"] },
+  { tipo:"listening", audio:"library", audioLang:"en-US", pregunta:"Listen and choose", correcta:"library", opciones:["library","hospital","museum"] },
+
+  // ─── UNIT 2: Activities (deportes y actividades) ───
+  { tipo:"traducir", pregunta:"jugar al fútbol", correcta:"play football", opciones:["play football","play tennis","ride a bike"] },
+  { tipo:"traducir", pregunta:"montar en bici", correcta:"ride a bike", opciones:["ride a bike","run","swim"] },
+  { tipo:"traducir", pregunta:"nadar", correcta:"swim", opciones:["swim","jump","sing"] },
+  { tipo:"traducir", pregunta:"correr", correcta:"run", opciones:["run","walk","dance"] },
+  { tipo:"traducir", pregunta:"saltar", correcta:"jump", opciones:["jump","run","fly"] },
+  { tipo:"traducir", pregunta:"bailar", correcta:"dance", opciones:["dance","sing","play"] },
+  { tipo:"traducir", pregunta:"cantar", correcta:"sing", opciones:["sing","read","write"] },
+  { tipo:"traducir", pregunta:"leer", correcta:"read", opciones:["read","write","draw"] },
+  { tipo:"traducir", pregunta:"escribir", correcta:"write", opciones:["write","read","sing"] },
+  { tipo:"traducir", pregunta:"dibujar", correcta:"draw", opciones:["draw","paint","write"] },
+  { tipo:"vocab_imagen", emoji:"⚽", pregunta:"What activity is it?", correcta:"play football", opciones:["play football","swim","run"] },
+  { tipo:"vocab_imagen", emoji:"🏊", pregunta:"What activity is it?", correcta:"swim", opciones:["swim","jump","dance"] },
+  { tipo:"vocab_imagen", emoji:"🎨", pregunta:"What activity is it?", correcta:"paint", opciones:["paint","read","sing"] },
+  { tipo:"completar", pregunta:"I ___ ride a bike.", correcta:"can", opciones:["can","am","is"] },
+  { tipo:"completar", pregunta:"She ___ swim very well.", correcta:"can", opciones:["can","is","do"] },
+  { tipo:"completar", pregunta:"Can you sing? Yes, I ___.", correcta:"can", opciones:["can","am","do"] },
+  { tipo:"completar", pregunta:"I ___ play tennis on Mondays.", correcta:"play", opciones:["play","plays","playing"] },
+  { tipo:"completar", pregunta:"He ___ football every day.", correcta:"plays", opciones:["plays","play","playing"] },
+  { tipo:"listening", audio:"dance", audioLang:"en-US", pregunta:"Listen and choose", correcta:"dance", opciones:["dance","draw","run"] },
+
+  // ─── UNIT 3: Technology (dispositivos) ───
+  { tipo:"traducir", pregunta:"ordenador", correcta:"computer", opciones:["computer","tablet","phone"] },
+  { tipo:"traducir", pregunta:"teléfono", correcta:"phone", opciones:["phone","tablet","camera"] },
+  { tipo:"traducir", pregunta:"televisión", correcta:"television", opciones:["television","radio","camera"] },
+  { tipo:"traducir", pregunta:"tableta", correcta:"tablet", opciones:["tablet","phone","laptop"] },
+  { tipo:"traducir", pregunta:"cámara", correcta:"camera", opciones:["camera","phone","tablet"] },
+  { tipo:"traducir", pregunta:"radio", correcta:"radio", opciones:["radio","television","phone"] },
+  { tipo:"traducir", pregunta:"robot", correcta:"robot", opciones:["robot","computer","camera"] },
+  { tipo:"traducir", pregunta:"reloj", correcta:"watch", opciones:["watch","clock","phone"] },
+  { tipo:"vocab_imagen", emoji:"💻", pregunta:"What is it?", correcta:"computer", opciones:["computer","tablet","tv"] },
+  { tipo:"vocab_imagen", emoji:"📱", pregunta:"What is it?", correcta:"phone", opciones:["phone","tablet","camera"] },
+  { tipo:"vocab_imagen", emoji:"📷", pregunta:"What is it?", correcta:"camera", opciones:["camera","phone","robot"] },
+  { tipo:"vocab_imagen", emoji:"🤖", pregunta:"What is it?", correcta:"robot", opciones:["robot","computer","tv"] },
+  { tipo:"completar", pregunta:"This ___ my new phone.", correcta:"is", opciones:["is","are","am"] },
+  { tipo:"completar", pregunta:"These ___ my headphones.", correcta:"are", opciones:["are","is","am"] },
+  { tipo:"completar", pregunta:"I ___ got a tablet.", correcta:"have", opciones:["have","has","is"] },
+  { tipo:"completar", pregunta:"He ___ got a new computer.", correcta:"has", opciones:["has","have","is"] },
+  { tipo:"listening", audio:"camera", audioLang:"en-US", pregunta:"Listen and choose", correcta:"camera", opciones:["camera","computer","phone"] },
+
+  // ─── UNIT 4: Food (comida) ───
+  { tipo:"traducir", pregunta:"manzana", correcta:"apple", opciones:["apple","orange","banana"] },
+  { tipo:"traducir", pregunta:"plátano", correcta:"banana", opciones:["banana","apple","grape"] },
+  { tipo:"traducir", pregunta:"naranja", correcta:"orange", opciones:["orange","apple","lemon"] },
+  { tipo:"traducir", pregunta:"pan", correcta:"bread", opciones:["bread","cheese","milk"] },
+  { tipo:"traducir", pregunta:"queso", correcta:"cheese", opciones:["cheese","butter","milk"] },
+  { tipo:"traducir", pregunta:"leche", correcta:"milk", opciones:["milk","water","juice"] },
+  { tipo:"traducir", pregunta:"agua", correcta:"water", opciones:["water","milk","juice"] },
+  { tipo:"traducir", pregunta:"huevos", correcta:"eggs", opciones:["eggs","fish","meat"] },
+  { tipo:"traducir", pregunta:"pescado", correcta:"fish", opciones:["fish","meat","chicken"] },
+  { tipo:"traducir", pregunta:"pollo", correcta:"chicken", opciones:["chicken","fish","beef"] },
+  { tipo:"traducir", pregunta:"arroz", correcta:"rice", opciones:["rice","pasta","bread"] },
+  { tipo:"traducir", pregunta:"patatas", correcta:"potatoes", opciones:["potatoes","tomatoes","carrots"] },
+  { tipo:"traducir", pregunta:"tomates", correcta:"tomatoes", opciones:["tomatoes","potatoes","onions"] },
+  { tipo:"traducir", pregunta:"zanahorias", correcta:"carrots", opciones:["carrots","tomatoes","peas"] },
+  { tipo:"vocab_imagen", emoji:"🍎", pregunta:"What food is it?", correcta:"apple", opciones:["apple","orange","banana"] },
+  { tipo:"vocab_imagen", emoji:"🍌", pregunta:"What food is it?", correcta:"banana", opciones:["banana","grape","lemon"] },
+  { tipo:"vocab_imagen", emoji:"🍞", pregunta:"What food is it?", correcta:"bread", opciones:["bread","cheese","milk"] },
+  { tipo:"vocab_imagen", emoji:"🧀", pregunta:"What food is it?", correcta:"cheese", opciones:["cheese","butter","milk"] },
+  { tipo:"vocab_imagen", emoji:"🥚", pregunta:"What food is it?", correcta:"eggs", opciones:["eggs","cheese","meat"] },
+  { tipo:"vocab_imagen", emoji:"🐟", pregunta:"What food is it?", correcta:"fish", opciones:["fish","chicken","meat"] },
+  { tipo:"vocab_imagen", emoji:"🥕", pregunta:"What food is it?", correcta:"carrots", opciones:["carrots","tomatoes","potatoes"] },
+  { tipo:"completar", pregunta:"I like ___ for breakfast.", correcta:"milk", opciones:["milk","football","park"] },
+  { tipo:"completar", pregunta:"There ___ some bread on the table.", correcta:"is", opciones:["is","are","am"] },
+  { tipo:"completar", pregunta:"There ___ some apples in the fridge.", correcta:"are", opciones:["are","is","am"] },
+  { tipo:"completar", pregunta:"I don't ___ fish.", correcta:"like", opciones:["like","likes","liking"] },
+  { tipo:"listening", audio:"chicken", audioLang:"en-US", pregunta:"Listen and choose", correcta:"chicken", opciones:["chicken","cheese","carrots"] },
+
+  // ─── UNIT 5: Recycling (medio ambiente) ───
+  { tipo:"traducir", pregunta:"reciclar", correcta:"recycle", opciones:["recycle","reuse","reduce"] },
+  { tipo:"traducir", pregunta:"papel", correcta:"paper", opciones:["paper","plastic","glass"] },
+  { tipo:"traducir", pregunta:"plástico", correcta:"plastic", opciones:["plastic","paper","metal"] },
+  { tipo:"traducir", pregunta:"vidrio", correcta:"glass", opciones:["glass","plastic","metal"] },
+  { tipo:"traducir", pregunta:"metal", correcta:"metal", opciones:["metal","glass","wood"] },
+  { tipo:"traducir", pregunta:"basura", correcta:"rubbish", opciones:["rubbish","tree","earth"] },
+  { tipo:"traducir", pregunta:"árbol", correcta:"tree", opciones:["tree","flower","plant"] },
+  { tipo:"traducir", pregunta:"planta", correcta:"plant", opciones:["plant","flower","tree"] },
+  { tipo:"traducir", pregunta:"botella", correcta:"bottle", opciones:["bottle","can","box"] },
+  { tipo:"traducir", pregunta:"caja", correcta:"box", opciones:["box","bottle","bag"] },
+  { tipo:"traducir", pregunta:"bolsa", correcta:"bag", opciones:["bag","box","bottle"] },
+  { tipo:"vocab_imagen", emoji:"🌳", pregunta:"What is it?", correcta:"tree", opciones:["tree","plant","flower"] },
+  { tipo:"vocab_imagen", emoji:"🍶", pregunta:"What is it?", correcta:"bottle", opciones:["bottle","box","bag"] },
+  { tipo:"vocab_imagen", emoji:"♻️", pregunta:"What is it?", correcta:"recycle", opciones:["recycle","rubbish","plastic"] },
+  { tipo:"completar", pregunta:"We ___ paper at school.", correcta:"recycle", opciones:["recycle","read","write"] },
+  { tipo:"completar", pregunta:"We must ___ the planet.", correcta:"protect", opciones:["protect","play","paint"] },
+  { tipo:"completar", pregunta:"Don't ___ the rubbish on the floor.", correcta:"throw", opciones:["throw","take","make"] },
+  { tipo:"listening", audio:"bottle", audioLang:"en-US", pregunta:"Listen and choose", correcta:"bottle", opciones:["bottle","box","bag"] },
+
+  // ─── UNIT 6: A show (espectáculo, ropa, sentimientos) ───
+  { tipo:"traducir", pregunta:"feliz", correcta:"happy", opciones:["happy","sad","angry"] },
+  { tipo:"traducir", pregunta:"triste", correcta:"sad", opciones:["sad","happy","tired"] },
+  { tipo:"traducir", pregunta:"enfadado", correcta:"angry", opciones:["angry","scared","sad"] },
+  { tipo:"traducir", pregunta:"asustado", correcta:"scared", opciones:["scared","angry","sad"] },
+  { tipo:"traducir", pregunta:"cansado", correcta:"tired", opciones:["tired","happy","scared"] },
+  { tipo:"traducir", pregunta:"emocionado", correcta:"excited", opciones:["excited","sad","tired"] },
+  { tipo:"traducir", pregunta:"camiseta", correcta:"t-shirt", opciones:["t-shirt","jumper","jacket"] },
+  { tipo:"traducir", pregunta:"vaqueros", correcta:"jeans", opciones:["jeans","trousers","shorts"] },
+  { tipo:"traducir", pregunta:"jersey", correcta:"jumper", opciones:["jumper","jacket","t-shirt"] },
+  { tipo:"traducir", pregunta:"chaqueta", correcta:"jacket", opciones:["jacket","jumper","coat"] },
+  { tipo:"traducir", pregunta:"zapatos", correcta:"shoes", opciones:["shoes","socks","boots"] },
+  { tipo:"traducir", pregunta:"calcetines", correcta:"socks", opciones:["socks","shoes","gloves"] },
+  { tipo:"traducir", pregunta:"sombrero", correcta:"hat", opciones:["hat","cap","scarf"] },
+  { tipo:"vocab_imagen", emoji:"😀", pregunta:"How does she feel?", correcta:"happy", opciones:["happy","sad","angry"] },
+  { tipo:"vocab_imagen", emoji:"😢", pregunta:"How does she feel?", correcta:"sad", opciones:["sad","happy","tired"] },
+  { tipo:"vocab_imagen", emoji:"😠", pregunta:"How does she feel?", correcta:"angry", opciones:["angry","scared","sad"] },
+  { tipo:"vocab_imagen", emoji:"👕", pregunta:"What is it?", correcta:"t-shirt", opciones:["t-shirt","jumper","jacket"] },
+  { tipo:"vocab_imagen", emoji:"👟", pregunta:"What are they?", correcta:"shoes", opciones:["shoes","socks","boots"] },
+  { tipo:"completar", pregunta:"I ___ wearing a red t-shirt.", correcta:"am", opciones:["am","is","are"] },
+  { tipo:"completar", pregunta:"She is ___ a blue jumper.", correcta:"wearing", opciones:["wearing","wear","wears"] },
+  { tipo:"completar", pregunta:"We are very ___ today!", correcta:"happy", opciones:["happy","tree","apple"] },
+  { tipo:"listening", audio:"happy", audioLang:"en-US", pregunta:"Listen and choose", correcta:"happy", opciones:["happy","angry","tired"] },
+];
+
+// ============ MATEMÁTICAS — placeholder (3º primaria) ============
+// Amplía añadiendo más items siguiendo los formatos comentados arriba
+const MATES_CORPUS = [
+  { tipo:"pregunta", pregunta:"23 + 14", correcta:"37", opciones:["37","27","47"] },
+  { tipo:"pregunta", pregunta:"50 - 18", correcta:"32", opciones:["32","42","28"] },
+  { tipo:"pregunta", pregunta:"6 × 7", correcta:"42", opciones:["42","36","48"] },
+  { tipo:"pregunta", pregunta:"24 ÷ 4", correcta:"6", opciones:["6","8","4"] },
+  { tipo:"pregunta", pregunta:"¿Cuál es el doble de 12?", correcta:"24", opciones:["24","14","20"] },
+  { tipo:"pregunta", pregunta:"¿Cuál es la mitad de 30?", correcta:"15", opciones:["15","20","10"] },
+  { tipo:"pregunta", pregunta:"¿Qué número va antes del 100?", correcta:"99", opciones:["99","101","98"] },
+  { tipo:"pregunta", pregunta:"¿Cuántos minutos hay en una hora?", correcta:"60", opciones:["60","100","30"] },
+  { tipo:"pregunta", pregunta:"¿Cuántos lados tiene un triángulo?", correcta:"3", opciones:["3","4","5"] },
+  { tipo:"pregunta", pregunta:"¿Cuántos lados tiene un cuadrado?", correcta:"4", opciones:["4","3","6"] },
+];
+
+// ============ CASTELLANO — placeholder (3º primaria) ============
+const CASTELLANO_CORPUS = [
+  { tipo:"pregunta", pregunta:"¿Cuál es un sustantivo?", correcta:"perro", opciones:["perro","correr","rojo"] },
+  { tipo:"pregunta", pregunta:"¿Cuál es un verbo?", correcta:"saltar", opciones:["saltar","silla","azul"] },
+  { tipo:"pregunta", pregunta:"¿Cuál es un adjetivo?", correcta:"bonito", opciones:["bonito","mesa","comer"] },
+  { tipo:"completar", pregunta:"El ___ ladra fuerte.", correcta:"perro", opciones:["perro","comer","rápido"] },
+  { tipo:"completar", pregunta:"Mi hermana ___ alta.", correcta:"es", opciones:["es","son","soy"] },
+  { tipo:"pregunta", pregunta:"Plural de \"flor\":", correcta:"flores", opciones:["flores","floras","flora"] },
+  { tipo:"pregunta", pregunta:"Plural de \"lápiz\":", correcta:"lápices", opciones:["lápices","lápizes","lápizs"] },
+  { tipo:"pregunta", pregunta:"¿Cuál lleva tilde?", correcta:"árbol", opciones:["árbol","arbol","árbool"] },
+  { tipo:"pregunta", pregunta:"Sinónimo de \"contento\":", correcta:"feliz", opciones:["feliz","triste","enfadado"] },
+  { tipo:"pregunta", pregunta:"Antónimo de \"grande\":", correcta:"pequeño", opciones:["pequeño","alto","largo"] },
+];
+
+// ============ CATALÀ — placeholder (3r de primària) ============
+const CATALAN_CORPUS = [
+  { tipo:"traducir", pregunta:"perro", correcta:"gos", opciones:["gos","gat","ocell"] },
+  { tipo:"traducir", pregunta:"casa", correcta:"casa", opciones:["casa","carrer","cotxe"] },
+  { tipo:"traducir", pregunta:"agua", correcta:"aigua", opciones:["aigua","llet","suc"] },
+  { tipo:"traducir", pregunta:"escuela", correcta:"escola", opciones:["escola","parc","botiga"] },
+  { tipo:"traducir", pregunta:"libro", correcta:"llibre", opciones:["llibre","quadern","llapis"] },
+  { tipo:"completar", pregunta:"Jo ___ una nena.", correcta:"sóc", opciones:["sóc","ets","és"] },
+  { tipo:"completar", pregunta:"Tu ___ molt alt.", correcta:"ets", opciones:["ets","sóc","és"] },
+  { tipo:"pregunta", pregunta:"Plural de \"gos\":",
+
 /* ==========================================================================
    MASCOTA BULLDOG FRANCÉS FLUFFY - 4 fases de crecimiento
    ========================================================================== */
