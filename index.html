@@ -8244,87 +8244,174 @@ function playIntro(destino) {
   introDestino = destino || "casa";
   introPlaying = true;
 
-  const fluffyEl = document.getElementById("intro-fluffy");
-  if (fluffyEl) {
-    fluffyEl.innerHTML = MASCOTA_SVG[mascotPhase()];
-    fluffyEl.classList.remove("drop", "bounce");
-  }
-
-  const logoEl = document.getElementById("intro-logo");
-  if (logoEl) {
-    logoEl.innerHTML = "";
-    const palabras = ["FLUFFY", "BRAIN"];
-    let colorIdx = 0;
-    palabras.forEach((pal, wi) => {
-      for (let i = 0; i < pal.length; i++) {
-        const span = document.createElement("span");
-        span.className = "intro-letter color-" + ((colorIdx % 6) + 1);
-        span.textContent = pal[i];
-        logoEl.appendChild(span);
-        colorIdx++;
-      }
-      if (wi === 0) {
-        const space = document.createElement("span");
-        space.className = "intro-space";
-        logoEl.appendChild(space);
-      }
-    });
-  }
-
-  const brainEl = document.getElementById("intro-brain");
-  if (brainEl) brainEl.classList.remove("show");
-  const creditEl = document.getElementById("intro-credit");
-  if (creditEl) creditEl.classList.remove("show");
-
-  goScreen("intro");
-
+  // Limpiar timers anteriores por si acaso
   introTimers.forEach(t => clearTimeout(t));
   introTimers = [];
 
+  // Preparar SVGs de la caja, Fluffy y la chispa
+  const cajaBase = document.getElementById("intro-caja-base");
+  const cajaTapa = document.getElementById("intro-caja-tapa");
+  const fluffyWrap = document.getElementById("intro-fluffy-wrap");
+  const chispa = document.getElementById("intro-chispa");
+  const cajaWrap = document.getElementById("intro-caja-wrap");
+  const creditBlock = document.getElementById("intro-credit-block");
+  const wordmark = document.getElementById("intro-wordmark-letters");
+
+  if (cajaBase) cajaBase.innerHTML = INTRO_CAJA_BASE;
+  if (cajaTapa) cajaTapa.innerHTML = INTRO_CAJA_TAPA;
+  if (fluffyWrap) fluffyWrap.innerHTML = MASCOTA_SVG[mascotPhase()];
+  if (chispa) chispa.innerHTML = INTRO_CHISPA;
+
+  // Reset de clases por si la intro se ha visto antes
+  if (creditBlock) creditBlock.classList.remove("in", "out");
+  if (cajaWrap) cajaWrap.classList.remove("in", "breathing", "fade");
+  if (cajaTapa) cajaTapa.classList.remove("pop");
+  if (fluffyWrap) fluffyWrap.classList.remove("emerge", "idle");
+  if (chispa) chispa.classList.remove("in", "spin");
+
+  // Construir wordmark "FLUFFY BRAIN" letra a letra
+  if (wordmark) {
+    wordmark.innerHTML = "";
+    const letras = "FLUFFYBRAIN".split(""); // sin espacio en string, lo añadimos como elemento aparte
+    const conEspacio = ["F","L","U","F","F","Y","·","B","R","A","I","N"]; // 12 elementos pero usamos 11 + espacio
+    // Mejor: 6 + 5 con un span de espacio en medio
+    const grupo1 = ["F","L","U","F","F","Y"];
+    const grupo2 = ["B","R","A","I","N"];
+    grupo1.forEach(ch => {
+      const span = document.createElement("span");
+      span.className = "intro-letter";
+      span.textContent = ch;
+      wordmark.appendChild(span);
+    });
+    const space = document.createElement("span");
+    space.className = "intro-letter space";
+    space.textContent = " ";
+    wordmark.appendChild(space);
+    grupo2.forEach(ch => {
+      const span = document.createElement("span");
+      span.className = "intro-letter";
+      span.textContent = ch;
+      wordmark.appendChild(span);
+    });
+  }
+
+  // Mostrar pantalla
+  goScreen("intro");
+
+  // ════════ STORYBOARD ════════
+  // Asegurar AudioContext desbloqueado al iniciar
+  try { getAudioCtx(); } catch(e){}
+
+  // T=0.0s: "VALERIA VENTURA presenta" entra
   introTimers.push(setTimeout(() => {
-    if (fluffyEl) fluffyEl.classList.add("drop");
-    try { getAudioCtx(); playMelodyIntro(); } catch(e) {}
-  }, 300));
+    if (creditBlock) creditBlock.classList.add("in");
+    playPlop();
+  }, 200));
 
+  // T=1.4s: crédito sale
   introTimers.push(setTimeout(() => {
-    if (fluffyEl) { fluffyEl.classList.remove("drop"); fluffyEl.classList.add("bounce"); }
-  }, 1050));
+    if (creditBlock) {
+      creditBlock.classList.remove("in");
+      creditBlock.classList.add("out");
+    }
+  }, 1400));
 
-  const letras = logoEl ? logoEl.querySelectorAll(".intro-letter") : [];
-  letras.forEach((l, i) => {
-    introTimers.push(setTimeout(() => { l.classList.add("show"); }, 1050 + i * 85));
-  });
-
-  const tBrain = 1050 + letras.length * 85 + 120;
+  // T=1.6s: caja entra desde abajo con rebote
   introTimers.push(setTimeout(() => {
-    if (brainEl) brainEl.classList.add("show");
-  }, tBrain));
+    if (cajaWrap) cajaWrap.classList.add("in");
+    playPlop();
+  }, 1600));
 
+  // T=2.3s: caja respira (anticipación clásica de animación)
   introTimers.push(setTimeout(() => {
-    if (creditEl) creditEl.classList.add("show");
-  }, tBrain + 400));
+    if (cajaWrap) {
+      cajaWrap.classList.remove("in");
+      cajaWrap.classList.add("breathing");
+    }
+  }, 2300));
 
+  // T=2.65s: tapa salta + sonido pop
+  introTimers.push(setTimeout(() => {
+    if (cajaWrap) cajaWrap.classList.remove("breathing");
+    if (cajaTapa) cajaTapa.classList.add("pop");
+    playPop();
+  }, 2650));
+
+  // T=2.9s: Fluffy emerge con squash & stretch + voz "FLUFFY BRAIN" + ladrido + mlem
+  introTimers.push(setTimeout(() => {
+    if (fluffyWrap) fluffyWrap.classList.add("emerge");
+    playFluffyBrainVoice();
+    setTimeout(() => playBark(0), 200);
+    setTimeout(() => playMlem(), 850);
+  }, 2900));
+
+  // T=3.8s: Fluffy entra en idle (respira)
+  introTimers.push(setTimeout(() => {
+    if (fluffyWrap) {
+      fluffyWrap.classList.remove("emerge");
+      fluffyWrap.classList.add("idle");
+    }
+  }, 3800));
+
+  // T=4.0s: aparecen las letras del wordmark, una a una con pop
+  if (wordmark) {
+    const letras = wordmark.querySelectorAll(".intro-letter");
+    letras.forEach((l, i) => {
+      introTimers.push(setTimeout(() => {
+        l.classList.add("in");
+        if (!l.classList.contains("space")) playLetterPop(i);
+      }, 4000 + i * 90));
+    });
+
+    // Tras todas las letras, añadir respiración
+    introTimers.push(setTimeout(() => {
+      letras.forEach(l => l.classList.add("breathe"));
+    }, 4000 + letras.length * 90 + 200));
+  }
+
+  // T=4.7s: chispa aparece (sustituye al cerebro emoji)
+  introTimers.push(setTimeout(() => {
+    if (chispa) chispa.classList.add("in");
+    playPlop();
+  }, 4700));
+
+  // T=5.1s: chispa empieza a rotar suavemente
+  introTimers.push(setTimeout(() => {
+    if (chispa) chispa.classList.add("spin");
+  }, 5300));
+
+  // T=5.0s: confeti
   introTimers.push(setTimeout(() => {
     launchIntroConfetti();
-  }, tBrain + 100));
+  }, 5000));
 
+  // T=6.2s: caja se desvanece sutilmente
+  introTimers.push(setTimeout(() => {
+    if (cajaWrap) cajaWrap.classList.add("fade");
+  }, 6200));
+
+  // T=6.8s: transición a destino
   introTimers.push(setTimeout(() => {
     goAfterIntro();
-  }, tBrain + 1400));
+  }, 6800));
 }
 
 function launchIntroConfetti() {
-  const colors = ["#FFE4B8", "#FFD98E", "#FFF4E6", "#FFCE7A", "#FFF0DE", "#FFB89C"];
-  for (let i = 0; i < 24; i++) {
+  // Confeti Toca Boca: lunares de colores cálidos, sin triángulos
+  const colors = ["#FFD93D", "#FF8B6B", "#FFFFFF", "#FFB088", "#F5B700"];
+  for (let i = 0; i < 22; i++) {
     const c = document.createElement("div");
-    c.className = "confetti intro-confetti";
-    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.className = "intro-confetti";
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
     c.style.left = (5 + Math.random() * 90) + "%";
     c.style.top = "-20px";
-    c.style.animationDelay = (Math.random() * 0.8) + "s";
-    c.style.borderRadius = Math.random() < 0.5 ? "50%" : "2px";
+    c.style.animation = `confettiFall ${1.8 + Math.random() * 1.2}s cubic-bezier(0.45, 0.05, 0.55, 0.95) ${Math.random() * 0.6}s forwards`;
+    // Tamaños variados para más naturalidad
+    const size = 8 + Math.random() * 10;
+    c.style.width = size + "px";
+    c.style.height = size + "px";
     document.body.appendChild(c);
-    setTimeout(() => c.remove(), 3500);
+    setTimeout(() => c.remove(), 4000);
   }
 }
 
