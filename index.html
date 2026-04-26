@@ -8513,8 +8513,34 @@ function bootApp() {
   const destino = (!state.mascotName || state.mascotName.length === 0) ? "onboard" : "casa";
   playIntro(destino);
 }
-
-bootApp();
+// Conectar overlay "Toca para empezar" — desbloquea audio en iOS
+// y luego lanza la intro de verdad
+(function setupTapStart() {
+  const overlay = document.getElementById("intro-tap-start");
+  if (!overlay) return;
+  
+  const handleStart = (e) => {
+    e.preventDefault();
+    // Desbloquear audio AHORA, con el gesto del usuario
+    unlockAudio();
+    // Ocultar overlay
+    overlay.classList.add("hidden");
+    // Lanzar la intro real
+    const destino = (!state.mascotName || state.mascotName.length === 0) ? "onboard" : "casa";
+    playIntro(destino);
+  };
+  
+  overlay.addEventListener("touchend", handleStart, { passive: false, once: true });
+  overlay.addEventListener("click", handleStart, { once: true });
+})();
+function bootApp() {
+  updateMascotAll();
+  if (!state.lastNecesidadesUpdate) {
+    state.lastNecesidadesUpdate = Date.now();
+    saveState();
+  }
+  // Ya no llamamos a playIntro() aquí — lo hace setupTapStart tras el toque
+}
 </script>
 
 </body>
